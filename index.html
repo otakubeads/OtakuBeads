@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Otaku Beads | Locked UX</title>
+    <title>Otaku Beads | Universal</title>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
     <style id="dynamic-theme"></style>
@@ -13,79 +13,84 @@
             --spring-standard: cubic-bezier(0.2, 0, 0, 1);
         }
 
-        /* Prevent background scroll when bag is open */
-        body.lock-scroll { overflow: hidden; position: fixed; width: 100%; }
+        body.lock-scroll { overflow: hidden; }
 
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.4s var(--spring-standard), color 0.4s var(--spring-standard), transform 0.3s var(--spring-bounce); }
-        body { font-family: 'Google Sans', sans-serif; background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); overflow-x: hidden; }
+        body { font-family: 'Google Sans', sans-serif; background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); line-height: 1.5; }
 
-        #scrim {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2500;
-            opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
-            backdrop-filter: blur(4px);
+        /* --- RESPONSIVE GRID SYSTEM --- */
+        .container { max-width: 1400px; margin: 0 auto; width: 100%; }
+        
+        .grid { 
+            display: grid; 
+            /* Automatically adjust columns: 160px min for mobile, up to 1fr */
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); 
+            gap: 16px; 
+            padding: 16px; 
+            padding-bottom: 220px; 
         }
+
+        /* Desktop specific tweaks */
+        @media (min-width: 768px) {
+            .grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; padding: 32px; }
+            .sheet { max-width: 500px; right: 20px; left: auto; border-radius: 40px; height: 85vh; top: 50%; transform: translateY(150%); bottom: auto; }
+            .sheet.active { transform: translateY(-50%); }
+            #scrim { backdrop-filter: blur(8px); }
+        }
+
+        /* --- UI ELEMENTS --- */
+        .card { background: var(--md-sys-color-surface-container-low); border-radius: 28px; padding: 12px; position: relative; opacity: 0; transform: translateY(20px); }
+        .card.reveal { opacity: 1; transform: translateY(0); }
+        .card img { width: 100%; aspect-ratio: 1/1; border-radius: 20px; object-fit: cover; }
+        
+        #scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2500; opacity: 0; pointer-events: none; transition: 0.4s; }
         #scrim.active { opacity: 1; pointer-events: auto; }
 
-        .sheet { 
-            position: fixed; inset: 0; z-index: 3000; 
-            transform: translateY(100%); transition: transform 0.5s cubic-bezier(0.1, 0.9, 0.2, 1); 
-            background: var(--md-sys-color-surface-container-highest); display: flex; flex-direction: column; 
-            border-radius: 40px 40px 0 0;
-        }
+        .sheet { position: fixed; inset: 0; z-index: 3000; transform: translateY(100%); transition: transform 0.6s var(--spring-standard); background: var(--md-sys-color-surface-container-highest); display: flex; flex-direction: column; border-radius: 40px 40px 0 0; }
         .sheet.active { transform: translateY(0); }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px; padding-bottom: 220px; }
-        .card { background: var(--md-sys-color-surface-container-low); border-radius: 28px; padding: 12px; position: relative; opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s var(--spring-bounce); }
-        .card.reveal { opacity: 1; transform: translateY(0); }
-        .card img { width: 100%; aspect-ratio: 1/1; border-radius: 20px; object-fit: cover; margin-bottom: 8px; }
-        
-        .bag-row { display: flex; align-items: center; gap: 12px; background: var(--md-sys-color-surface-container-low); padding: 12px; border-radius: 20px; margin-bottom: 10px; }
-        .bag-row img { width: 52px; height: 52px; border-radius: 12px; object-fit: cover; }
-        
-        .btn { border: none; height: 50px; border-radius: 16px; font-weight: 700; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn { border: none; height: 50px; border-radius: 16px; font-weight: 700; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-primary { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
         .btn-tonal { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); }
-
-        .close-btn { width: 48px; height: 48px; border-radius: 24px; border: none; background: var(--md-sys-color-surface-variant); color: var(--md-sys-color-on-surface-variant); display: flex; align-items: center; justify-content: center; cursor: pointer; }
     </style>
 </head>
 <body>
-
     <div id="scrim" onclick="MODULE_UI.toggleBag(false)"></div>
 
-    <header style="padding: 20px; display: flex; align-items: center; justify-content: space-between;">
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <img src="logo.jpg" style="width:48px; height:48px; border-radius:14px;" onerror="this.src='logo.jpg'">
-            <h1 style="font-size: 24px; font-weight: 700;">Otaku Beads</h1>
-        </div>
-        <button class="close-btn" onclick="THEME_ENGINE.toggle()"><span class="material-symbols-rounded" id="theme-icon">brightness_auto</span></button>
-    </header>
+    <div class="container">
+        <header style="padding: 24px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <img src="logo.jpg" style="width:56px; height:56px; border-radius:16px;" onerror="this.src='logo.jpg'">
+                <h1 style="font-size: 28px; font-weight: 700;">Otaku Beads</h1>
+            </div>
+            <button class="btn-tonal" style="width:48px; height:48px; border-radius:24px; border:none;" onclick="THEME_ENGINE.toggle()">
+                <span class="material-symbols-rounded" id="theme-icon">brightness_auto</span>
+            </button>
+        </header>
 
-    <main class="grid" id="main-grid"></main>
+        <main class="grid" id="main-grid"></main>
+    </div>
 
-    <button style="position:fixed; bottom:24px; left:20px; right:20px; height:76px; background:var(--md-sys-color-primary); color:var(--md-sys-color-on-primary); border-radius:24px; border:none; font-weight:700; font-size: 17px; z-index:1001; box-shadow: var(--md-sys-elevation-4);" onclick="MODULE_UI.toggleBag(true)">
-        Bag (<span id="bag-count">0</span>)
+    <button id="bag-fab" style="position:fixed; bottom:32px; right:24px; left:24px; max-width:400px; margin:0 auto; height:80px; background:var(--md-sys-color-primary); color:var(--md-sys-color-on-primary); border-radius:28px; border:none; font-weight:700; font-size: 18px; z-index:1001; box-shadow: var(--md-sys-elevation-4);" onclick="MODULE_UI.toggleBag(true)">
+        Review Bag (<span id="bag-count">0</span>)
     </button>
 
     <div id="bag-sheet" class="sheet">
         <div style="height: 4px; width: 40px; background: var(--md-sys-color-outline); border-radius: 2px; margin: 12px auto; opacity: 0.2;"></div>
-        
-        <div style="padding: 10px 24px; display: flex; align-items: center; justify-content: space-between;">
-            <button class="close-btn" onclick="MODULE_UI.toggleBag(false)">
+        <div style="padding: 16px 24px; display: flex; align-items: center; justify-content: space-between;">
+            <button class="btn-tonal" style="width:40px; height:40px; border-radius:20px; border:none;" onclick="MODULE_UI.toggleBag(false)">
                 <span class="material-symbols-rounded">close</span>
             </button>
-            <h2 style="font-size: 20px; font-weight: 700;">Your Bag</h2>
+            <h2 style="font-size: 22px; font-weight: 700;">Your Bag</h2>
             <button onclick="MODULE_CORE.clear()" style="background:none; border:none; color:var(--md-sys-color-error); font-weight:700;">CLEAR</button>
         </div>
-
-        <div id="bag-items" style="flex: 1; overflow-y: auto; padding: 16px;"></div>
-
-        <div style="padding: 24px; background: var(--md-sys-color-surface-container-high); border-radius: 32px 32px 0 0;">
-            <div style="display:flex; justify-content: space-between; margin-bottom: 20px;">
-                <span style="opacity: 0.6;">Total</span>
-                <span id="bag-total" style="font-size: 28px; font-weight: 900; color: var(--md-sys-color-primary);">R 0.00</span>
+        <div id="bag-items" style="flex: 1; overflow-y: auto; padding: 20px;"></div>
+        <div style="padding: 32px 24px; background: var(--md-sys-color-surface-container-high); border-radius: 32px 32px 0 0;">
+            <div style="display:flex; justify-content: space-between; margin-bottom: 24px;">
+                <span style="opacity:0.7">Total Amount</span>
+                <span id="bag-total" style="font-size: 32px; font-weight: 900; color: var(--md-sys-color-primary);">R 0.00</span>
             </div>
-            <button class="btn btn-primary" style="height: 68px; border-radius: 20px;" onclick="MODULE_CORE.checkout()">Confirm on WhatsApp</button>
+            <button class="btn btn-primary" style="height: 72px; border-radius: 20px; font-size: 18px;" onclick="MODULE_CORE.checkout()">Confirm Order</button>
         </div>
     </div>
 
@@ -110,13 +115,13 @@
         })();
 
         const MODULE_CORE = (() => {
-            let cart = JSON.parse(localStorage.getItem('otaku_v8')) || [];
+            let cart = JSON.parse(localStorage.getItem('otaku_v9')) || [];
             return {
                 getCart: () => cart,
                 add(id) { cart.push(id); this.save(); },
                 remove(id) { const i = cart.lastIndexOf(id); if(i>-1) cart.splice(i,1); this.save(); },
                 clear() { if(confirm("Empty Bag?")) { cart=[]; this.save(); MODULE_UI.toggleBag(false); } },
-                save() { localStorage.setItem('otaku_v8', JSON.stringify(cart)); document.getElementById('bag-count').innerText = cart.length; MODULE_RENDERER.refresh(true); },
+                save() { localStorage.setItem('otaku_v9', JSON.stringify(cart)); document.getElementById('bag-count').innerText = cart.length; MODULE_RENDERER.refresh(true); },
                 checkout() {
                     const counts = cart.reduce((a,c)=>{ a[c]=(a[c]||0)+1; return a; }, {});
                     let m = "Otaku Beads Order:%0A";
@@ -136,12 +141,12 @@
                     let h = "";
                     for(let i=1; i<=28; i++) {
                         const q = counts[i] || 0;
-                        if(i === 26) h += `<div class="card reveal" style="opacity:0.5"><img src="26.jpg" onerror="this.src='logo.jpg'"><div style="font-weight:700;">#26</div><button class="btn btn-tonal" disabled>Coming Soon</button></div>`;
+                        if(i === 26) h += `<div class="card reveal" style="opacity:0.5"><img src="26.jpg" onerror="this.src='logo.jpg'"><div style="font-weight:700;">#26</div><button class="btn-tonal btn" style="margin-top:8px" disabled>Coming Soon</button></div>`;
                         else h += `<div class="card ${k?'reveal':''}">
                             <img src="${i}.jpg" onerror="this.src='logo.jpg'">
-                            <div style="font-weight:700;">Design #${i}</div>
+                            <div style="font-weight:700; margin-top:8px;">Design #${i}</div>
                             <div style="color:var(--md-sys-color-primary); font-weight:900;">R ${i<=2?45:65}.00</div>
-                            <button class="btn ${q>0?'btn-tonal':'btn-primary'}" onclick="MODULE_CORE.add(${i})">${q>0?q+' In':'Add'}</button>
+                            <button class="btn ${q>0?'btn-tonal':'btn-primary'}" style="margin-top:12px;" onclick="MODULE_CORE.add(${i})">${q>0?q+' in Bag':'Add to Bag'}</button>
                         </div>`;
                     }
                     g.innerHTML = h;
@@ -153,8 +158,8 @@
                     let total = 0;
                     list.innerHTML = Object.keys(counts).map(id => {
                         const p = id <= 2 ? 45 : 65; total += (p * counts[id]);
-                        return `<div class="bag-row"><img src="${id}.jpg" onerror="this.src='logo.jpg'"><div style="flex:1;">#${id}</div><div style="font-weight:900;">x${counts[id]}</div></div>`;
-                    }).join('') || '<div style="text-align:center; opacity:0.3;">Empty</div>';
+                        return `<div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; background:var(--md-sys-color-surface-container-low); padding:12px; border-radius:20px;"><img src="${id}.jpg" style="width:50px; height:50px; border-radius:10px;" onerror="this.src='logo.jpg'"><div style="flex:1;">#${id}</div><div style="font-weight:900;">x${counts[id]}</div><button onclick="MODULE_CORE.remove(${id})" style="border:none; background:none; color:var(--md-sys-color-error); font-weight:900; margin-left:10px;">－</button></div>`;
+                    }).join('') || '<div style="text-align:center; opacity:0.3; padding:40px;">Empty</div>';
                     document.getElementById('bag-total').innerText = `R ${total}.00`;
                 }
             };
@@ -164,7 +169,6 @@
             toggleBag(s) { 
                 document.getElementById('bag-sheet').classList.toggle('active', s);
                 document.getElementById('scrim').classList.toggle('active', s);
-                // LOCK SCROLL BRAIN FIX
                 if(s) document.body.classList.add('lock-scroll');
                 else document.body.classList.remove('lock-scroll');
             } 
