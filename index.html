@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Otaku Beads | Anime & K-Pop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Material+Symbols+Outlined" rel="stylesheet" />
+    <style>
+        :root {
+            --m3-surface: #fef7ff;
+            --m3-on-surface: #1c1b1f;
+            --m3-primary: #6750a4;
+            --m3-secondary-container: #e8def8;
+            --m3-disabled: #1c1b1f1f;
+            --m3-disabled-text: #1c1b1f61;
+            --whatsapp-green: #25D366;
+        }
+
+        body { 
+            font-family: 'Roboto', sans-serif; 
+            margin: 0; 
+            background-color: var(--m3-surface);
+            color: var(--m3-on-surface);
+        }
+
+        /* --- M3 UI Components --- */
+        .top-app-bar {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            height: 64px;
+            background: var(--m3-surface);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .burger-btn {
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+        }
+
+        .logo-img {
+            height: 40px;
+            margin-left: 16px;
+            border-radius: 8px;
+        }
+
+        /* --- Product Grid --- */
+        .container { padding: 16px; }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .card img {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 12px;
+            text-align: center;
+        }
+
+        .card h3 { margin: 0 0 8px 0; font-size: 1rem; }
+
+        /* --- Buttons --- */
+        .btn {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            border: none;
+            transition: opacity 0.2s;
+        }
+
+        .btn-wa {
+            background-color: var(--whatsapp-green);
+            color: white;
+        }
+
+        /* --- Special Design #26 Styling --- */
+        .card-disabled {
+            background-color: #f2f2f2;
+        }
+        
+        .card-disabled img {
+            filter: grayscale(1);
+            opacity: 0.5;
+        }
+
+        .btn-coming-soon {
+            background-color: var(--m3-disabled);
+            color: var(--m3-disabled-text);
+            cursor: not-allowed;
+        }
+
+        /* --- Promos Section --- */
+        .promo-section {
+            margin-top: 32px;
+            padding: 24px;
+            background-color: var(--m3-secondary-container);
+            border-radius: 28px;
+            text-align: center;
+        }
+
+        footer {
+            padding: 32px 16px;
+            text-align: center;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-app-bar">
+        <span class="material-symbols-outlined burger-btn">menu</span>
+        <img src="Logo.jpg" alt="Otaku Beads" class="logo-img">
+    </header>
+
+    <div class="container">
+        <div class="grid" id="product-grid">
+            </div>
+
+        <section class="promo-section">
+            <span class="material-symbols-outlined" style="font-size: 48px;">local_shipping</span>
+            <h2>Grand Opening Special!</h2>
+            <p>Order any 2 items and get a discount on your <b>Paxi</b> collection point delivery!</p>
+            <p><small>Valid until end of month.</small></p>
+        </section>
+    </div>
+
+    <footer>
+        &copy; 2026 Otaku Beads. Built on Termux.
+    </footer>
+
+    <script>
+        const grid = document.getElementById('product-grid');
+        const whatsappNumber = "27123456789"; // REPLACE WITH YOUR NUMBER
+
+        // Generate 28 cards
+        for (let i = 1; i <= 28; i++) {
+            const isComingSoon = (i === 26);
+            const card = document.createElement('div');
+            card.className = isComingSoon ? 'card card-disabled' : 'card';
+
+            const buttonHtml = isComingSoon 
+                ? `<button class="btn btn-coming-soon">Coming Soon</button>`
+                : `<a href="https://wa.me/${whatsappNumber}?text=Hi! I want to order Design #${i}. Please send Paxi details." class="btn btn-wa">Order via WA</a>`;
+
+            card.innerHTML = `
+                <img src="${i}.jpg" alt="Design ${i}" onerror="this.src='https://via.placeholder.com/200?text=Image+Missing'">
+                <div class="card-content">
+                    <h3>Design #${i}</h3>
+                    ${buttonHtml}
+                </div>
+            `;
+            grid.appendChild(card);
+        }
+    </script>
+</body>
+</html>
+
