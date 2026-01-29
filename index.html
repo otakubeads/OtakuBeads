@@ -3,150 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Otaku Beads</title>
+    <title>Otaku Beads | M3 Shop</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     <style>
         :root {
+            /* M3 Color Tokens */
             --md-sys-color-primary: #6750A4;
+            --md-sys-color-on-primary: #FFFFFF;
+            --md-sys-color-primary-container: #EADDFF;
             --md-sys-color-surface: #FEF7FF;
-            --md-sys-color-secondary: #625B71;
+            --md-sys-color-surface-container: #F3EDF7;
+            --md-sys-color-outline: #79747E;
+            --md-sys-color-error: #B3261E;
         }
-        body { font-family: 'Roboto', sans-serif; margin: 0; background: var(--md-sys-color-surface); padding-bottom: 80px; }
-        
-        /* Top Bar */
-        .top-bar {
-            display: flex; align-items: center; justify-content: space-between; padding: 12px 16px;
-            background: #FFF; box-shadow: 0 1px 2px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100;
-        }
-        .top-bar-left { display: flex; align-items: center; }
-        .logo-img { height: 40px; margin-left: 16px; border-radius: 50%; }
-        .menu-btn, .cart-btn { cursor: pointer; background: none; border: none; font-size: 24px; display: flex; align-items: center; color: #1C1B1F; }
-        .cart-count { background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; position: absolute; top: 8px; right: 8px; }
 
-        /* Navigation Drawer */
+        body { 
+            font-family: 'Roboto', sans-serif; 
+            margin: 0; 
+            background: var(--md-sys-color-surface); 
+            color: #1C1B1F;
+        }
+
+        /* M3 Top App Bar */
+        .top-app-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 8px 16px; height: 64px; background: var(--md-sys-color-surface);
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        .logo-container { display: flex; align-items: center; gap: 12px; }
+        .logo-img { height: 40px; width: 40px; border-radius: 50%; object-fit: cover; }
+
+        /* IconButton M3 Style */
+        .icon-btn {
+            width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
+            border: none; background: none; border-radius: 50%; cursor: pointer; color: #49454F;
+        }
+        .icon-btn:active { background: rgba(103, 80, 164, 0.1); }
+
+        /* Navigation Drawer (Burger Menu) */
         .nav-drawer {
-            position: fixed; left: -280px; top: 0; width: 280px; height: 100%;
-            background: #FFF; transition: 0.3s; z-index: 200; box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+            position: fixed; left: -360px; top: 0; width: 320px; height: 100%;
+            background: var(--md-sys-color-surface-container); 
+            transition: transform 0.3s cubic-bezier(0, 0, 0.2, 1);
+            z-index: 500; border-radius: 0 16px 16px 0; padding: 12px;
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
         }
-        .nav-drawer.active { left: 0; }
-        .nav-item { padding: 16px 24px; display: block; text-decoration: none; color: #49454F; font-weight: 500; }
+        .nav-drawer.active { transform: translateX(360px); }
 
-        /* Product Grid */
-        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 16px; }
-        .card { background: #FFF; border-radius: 12px; padding: 8px; text-align: center; border: 1px solid #E0E0E0; position: relative; }
-        .card img { width: 100%; border-radius: 8px; aspect-ratio: 1/1; object-fit: cover; }
-        
-        /* Buttons */
-        .btn { background: var(--md-sys-color-primary); color: white; border: none; padding: 10px; border-radius: 20px; width: 100%; margin-top: 8px; cursor: pointer; font-weight: 500; }
-        .btn-soon { background: #BDBDBD !important; cursor: not-allowed; }
-        .btn-remove { background: #ba1a1a; margin-top: 4px; font-size: 12px; }
-
-        /* Checkout Overlay */
-        #checkout-menu {
+        /* Checkout Menu (Full Screen Overlay) */
+        .checkout-view {
             position: fixed; top: 0; right: -100%; width: 100%; height: 100%;
-            background: #FFF; transition: 0.4s; z-index: 300; display: flex; flex-direction: column;
+            background: var(--md-sys-color-surface); z-index: 600;
+            transition: right 0.3s ease; display: flex; flex-direction: column;
         }
-        #checkout-menu.active { right: 0; }
-        .checkout-header { display: flex; align-items: center; padding: 16px; border-bottom: 1px solid #eee; }
-        .checkout-body { flex: 1; overflow-y: auto; padding: 16px; }
-        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f5f5f5; }
-        
-        .checkout-footer { padding: 16px; border-top: 1px solid #eee; }
-        .clear-btn { background: #79747E; color: white; border: none; padding: 12px; border-radius: 20px; width: 100%; margin-bottom: 8px; }
-        .wa-checkout-btn { background: #25D366; color: white; border: none; padding: 15px; border-radius: 20px; width: 100%; font-weight: bold; }
+        .checkout-view.active { right: 0; }
+
+        /* M3 Cards */
+        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 16px; }
+        .m3-card {
+            background: var(--md-sys-color-surface-container); border-radius: 12px;
+            padding: 12px; display: flex; flex-direction: column; gap: 8px;
+        }
+        .m3-card img { width: 100%; border-radius: 8px; aspect-ratio: 1/1; object-fit: cover; }
+
+        /* M3 Buttons */
+        .m3-btn {
+            height: 40px; border-radius: 20px; border: none; font-weight: 500;
+            padding: 0 24px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+        .btn-filled { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+        .btn-tonal { background: var(--md-sys-color-primary-container); color: #21005D; }
+        .btn-disabled { background: #E0E0E0; color: #9E9E9E; cursor: not-allowed; }
+
+        .badge {
+            background: var(--md-sys-color-error); color: white; border-radius: 10px;
+            font-size: 11px; padding: 2px 6px; position: absolute; top: 4px; right: 4px;
+        }
+
+        .cart-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px; margin: 8px 16px; background: var(--md-sys-color-surface-container);
+            border-radius: 12px;
+        }
     </style>
 </head>
 <body>
 
-    <header class="top-bar">
-        <div class="top-bar-left">
-            <button class="menu-btn" onclick="toggleMenu('drawer')"><span class="material-icons-outlined">menu</span></button>
+    <header class="top-app-bar">
+        <div class="logo-container">
+            <button class="icon-btn" onclick="toggle('drawer')"><span class="material-icons-outlined">menu</span></button>
             <img src="Logo.jpg" alt="Logo" class="logo-img">
         </div>
-        <button class="cart-btn" onclick="toggleMenu('checkout-menu')">
+        <button class="icon-btn" onclick="toggle('checkout')" style="position: relative;">
             <span class="material-icons-outlined">shopping_bag</span>
-            <span id="cart-badge" class="cart-count">0</span>
+            <span id="cart-count" class="badge">0</span>
         </button>
     </header>
 
     <nav id="drawer" class="nav-drawer">
-        <div style="padding: 24px 16px; font-weight: bold; font-size: 20px; border-bottom: 1px solid #eee;">Otaku Beads</div>
-        <a href="#" class="nav-item">Catalog</a>
-        <a href="#" class="nav-item">Shipping (Paxi)</a>
-        <a href="#" class="nav-item">Contact</a>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px;">
+            <span style="font-weight: 500; color: var(--md-sys-color-primary);">Otaku Beads</span>
+            <button class="icon-btn" onclick="toggle('drawer')"><span class="material-icons-outlined">close</span></button>
+        </div>
+        <div style="height: 1px; background: var(--md-sys-color-outline); opacity: 0.2; margin-bottom: 8px;"></div>
+        <a href="#" class="nav-item icon-btn" style="width: 100%; justify-content: start; border-radius: 28px; padding-left: 16px;">Catalog</a>
+        <a href="#" class="nav-item icon-btn" style="width: 100%; justify-content: start; border-radius: 28px; padding-left: 16px;">Paxi Shipping</a>
     </nav>
 
-    <div id="checkout-menu">
-        <div class="checkout-header">
-            <button class="menu-btn" onclick="toggleMenu('checkout-menu')"><span class="material-icons-outlined">arrow_back</span></button>
-            <h2 style="margin-left: 16px;">My Bag</h2>
-        </div>
-        <div class="checkout-body" id="cart-items">
+    <div id="checkout" class="checkout-view">
+        <div class="top-app-bar">
+            <div class="logo-container">
+                <button class="icon-btn" onclick="toggle('checkout')"><span class="material-icons-outlined">arrow_back</span></button>
+                <span style="font-size: 22px; font-weight: 400;">Your Bag</span>
             </div>
-        <div class="checkout-footer">
-            <button class="clear-btn" onclick="clearCart()">Clear All</button>
-            <button class="wa-checkout-btn" onclick="sendToWhatsApp()">Checkout via WhatsApp</button>
+        </div>
+        <div id="cart-list" style="flex: 1; overflow-y: auto;"></div>
+        <div style="padding: 24px; display: flex; flex-direction: column; gap: 12px;">
+            <button class="m3-btn btn-tonal" onclick="clearAll()">Clear All</button>
+            <button class="m3-btn btn-filled" onclick="whatsapp()">Checkout on WhatsApp</button>
         </div>
     </div>
 
-    <main class="product-grid" id="gallery"></main>
+    <main class="product-grid" id="grid"></main>
 
     <script>
         let cart = [];
+        function toggle(id) { document.getElementById(id).classList.toggle('active'); }
 
-        function toggleMenu(id) { document.getElementById(id).classList.toggle('active'); }
-
-        function updateCartUI() {
-            const container = document.getElementById('cart-items');
-            const badge = document.getElementById('cart-badge');
-            container.innerHTML = cart.length === 0 ? '<p>Your bag is empty.</p>' : '';
-            
-            cart.forEach((item, index) => {
-                container.innerHTML += `
-                    <div class="cart-item">
-                        <span>Design #${item}</span>
-                        <button class="menu-btn" onclick="removeFromCart(${index})"><span class="material-icons-outlined" style="color:red">delete</span></button>
-                    </div>`;
+        function renderCart() {
+            const list = document.getElementById('cart-list');
+            const count = document.getElementById('cart-count');
+            count.innerText = cart.length;
+            list.innerHTML = cart.length === 0 ? '<p style="text-align:center; margin-top:50px; opacity:0.6;">Your bag is empty</p>' : '';
+            cart.forEach((id, idx) => {
+                list.innerHTML += `<div class="cart-item">
+                    <span>Design #${id}</span>
+                    <button class="icon-btn" onclick="remove(${idx})"><span class="material-icons-outlined" style="color:var(--md-sys-color-error)">delete</span></button>
+                </div>`;
             });
-            badge.innerText = cart.length;
         }
 
-        function addToCart(id) {
-            cart.push(id);
-            updateCartUI();
+        function add(id) { cart.push(id); renderCart(); }
+        function remove(idx) { cart.splice(idx, 1); renderCart(); }
+        function clearAll() { cart = []; renderCart(); }
+        function whatsapp() {
+            if(cart.length === 0) return;
+            const text = encodeURIComponent("Order: " + cart.map(i => "#"+i).join(", "));
+            window.open(`https://wa.me/27XXXXXXXXX?text=${text}`);
         }
 
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            updateCartUI();
-        }
-
-        function clearCart() {
-            cart = [];
-            updateCartUI();
-        }
-
-        function sendToWhatsApp() {
-            if(cart.length === 0) return alert("Bag is empty!");
-            const message = "Hi Otaku Beads! I'd like to order: " + cart.map(i => "Design #" + i).join(", ");
-            window.open(`https://wa.me/27XXXXXXXXX?text=${encodeURIComponent(message)}`);
-        }
-
-        const gallery = document.getElementById('gallery');
+        const grid = document.getElementById('grid');
         for (let i = 1; i <= 28; i++) {
             const isSoon = (i === 26);
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <img src="${i}.jpg" alt="Design ${i}" onerror="this.src='coming soon.jpeg'">
-                <p><strong>Design #${i}</strong></p>
-                ${isSoon 
-                    ? `<button class="btn btn-soon" disabled>Coming Soon</button>` 
-                    : `<button class="btn" onclick="addToCart(${i})">Add to Bag</button>`
-                }
-            `;
-            gallery.appendChild(card);
+            grid.innerHTML += `
+                <div class="m3-card">
+                    <img src="${i}.jpg" onerror="this.src='coming soon.jpeg'">
+                    <div style="font-weight: 500; font-size: 14px;">Design #${i}</div>
+                    ${isSoon 
+                        ? '<button class="m3-btn btn-disabled" disabled>Coming Soon</button>' 
+                        : `<button class="m3-btn btn-filled" onclick="add(${i})">Add to Bag</button>`}
+                </div>`;
         }
     </script>
 </body>
