@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Otaku Beads | Morphing M3</title>
+    <title>Otaku Beads | M3 Expressive</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
     <style>
         :root {
             --md-sys-color-primary: #6750A4;
             --md-sys-color-on-primary: #FFFFFF;
+            --md-sys-color-primary-container: #EADDFF;
+            --md-sys-color-on-primary-container: #21005D;
             --md-sys-color-surface: #FEF7FF;
             --md-sys-color-surface-container: #F3EDF7;
             --md-sys-color-secondary-container: #E8DEF8;
@@ -34,20 +36,26 @@
         }
         .m3-card img { width: 100%; border-radius: 22px; aspect-ratio: 1/1; object-fit: cover; }
 
-        /* --- MORPHING BUTTON LOGIC --- */
+        /* --- EXPRESSIVE BUTTONS --- */
         .m3-btn {
             height: 52px; border-radius: 26px; border: none; font-weight: 700;
-            padding: 0 24px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-            gap: 8px; font-size: 16px; 
+            padding: 0 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            gap: 8px; font-size: 14px; 
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             background: var(--md-sys-color-primary); color: white;
             margin-top: 12px;
         }
-        /* Shape change on click */
-        .m3-btn:active {
-            border-radius: 12px; /* Morphs from Pill to Rounded Square */
-            transform: scale(0.95); /* Slight shrink effect */
-            filter: brightness(1.2);
+        .m3-btn:active { border-radius: 12px; transform: scale(0.95); }
+
+        /* Added State Button Style */
+        .btn-added {
+            background: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+        }
+        .btn-qty-chip {
+            background: var(--md-sys-color-primary);
+            color: white; padding: 2px 8px; border-radius: 12px;
+            font-size: 12px; font-weight: 900;
         }
 
         .icon-btn-morph {
@@ -57,35 +65,18 @@
             display: flex; align-items: center; justify-content: center;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .icon-btn-morph:active {
-            border-radius: 14px; /* Morphs from Circle to Squircle */
-            transform: scale(0.9);
-        }
+        .icon-btn-morph:active { border-radius: 14px; transform: scale(0.9); }
 
-        /* Checkout Layout Fixes */
+        /* Checkout Styles */
         .checkout-view {
             position: fixed; top: 0; right: -100%; width: 100%; height: 100%;
             background: var(--md-sys-color-surface); transition: 0.3s cubic-bezier(0, 0, 0.2, 1);
             z-index: 1000; display: flex; flex-direction: column;
         }
         .checkout-view.active { right: 0; }
-
-        .checkout-footer {
-            padding: 24px; background: var(--md-sys-color-surface); 
-            border-top: 1px solid #ddd; z-index: 1100;
-        }
-
-        .cart-item {
-            display: flex; align-items: center; padding: 16px; margin: 8px 16px;
-            background: var(--md-sys-color-surface-container); border-radius: 24px; gap: 12px;
-        }
+        .checkout-footer { padding: 24px; background: var(--md-sys-color-surface); border-top: 1px solid #ddd; z-index: 1100; }
+        .cart-item { display: flex; align-items: center; padding: 16px; margin: 8px 16px; background: var(--md-sys-color-surface-container); border-radius: 24px; gap: 12px; }
         .qty-text { font-size: 24px; font-weight: 900; color: var(--md-sys-color-primary); min-width: 35px; text-align: center; }
-
-        .qty-badge {
-            background: #B3261E; color: white; padding: 4px 10px;
-            border-radius: 12px; font-weight: 900; font-size: 14px;
-            position: absolute; top: 10px; right: 10px; z-index: 10;
-        }
     </style>
 </head>
 <body>
@@ -104,9 +95,7 @@
             <button class="icon-btn-morph" style="background:none" onclick="toggle('checkout-view')"><span class="material-symbols-outlined">arrow_back</span></button>
             <span style="font-size: 24px; font-weight: 700; flex: 1; margin-left: 12px;">Review Bag</span>
         </div>
-        
         <div id="cart-list" style="flex:1; overflow-y:auto; padding-bottom: 20px;"></div>
-        
         <div class="checkout-footer">
             <div id="total-summary" style="margin-bottom:16px; font-weight:900; font-size:22px; text-align:center; color: var(--md-sys-color-primary);">Items: 0</div>
             <button class="m3-btn" style="background:var(--md-sys-color-secondary-container); color:black; width:100%; margin-bottom:12px;" onclick="clearAll()">Clear Bag</button>
@@ -125,11 +114,17 @@
             document.getElementById('badge').innerText = cart.length;
             document.getElementById('total-summary').innerText = `Total Items: ${cart.length}`;
             
+            // Update Main Grid Buttons
             for(let i=1; i<=28; i++) {
-                const badge = document.getElementById(`qty-badge-${i}`);
-                if(badge) {
-                    badge.innerText = counts[i] || '';
-                    badge.style.display = counts[i] ? 'block' : 'none';
+                const btn = document.getElementById(`btn-${i}`);
+                if(btn && i !== 26) {
+                    if(counts[i]) {
+                        btn.innerHTML = `<span class="btn-qty-chip">Qty: ${counts[i]}</span> Added`;
+                        btn.classList.add('btn-added');
+                    } else {
+                        btn.innerHTML = `<span class="material-symbols-outlined" style="font-size:20px;">add_shopping_cart</span> Add`;
+                        btn.classList.remove('btn-added');
+                    }
                 }
             }
 
@@ -150,17 +145,8 @@
             });
         }
 
-        function add(id, silent=false) {
-            cart.push(id);
-            updateUI();
-        }
-
-        function remove(id) {
-            const index = cart.indexOf(id);
-            if (index > -1) cart.splice(index, 1);
-            updateUI();
-        }
-
+        function add(id, silent=false) { cart.push(id); updateUI(); }
+        function remove(id) { const index = cart.indexOf(id); if (index > -1) cart.splice(index, 1); updateUI(); }
         function clearAll() { cart = []; updateUI(); }
 
         function whatsapp() {
@@ -173,12 +159,11 @@
             const isSoon = (i === 26);
             grid.innerHTML += `
                 <div class="m3-card">
-                    <div id="qty-badge-${i}" class="qty-badge" style="display:none;"></div>
                     <img src="${i}.jpg" onerror="this.src='coming soon.jpeg'">
                     <div style="margin: 14px 0 4px 0; font-weight:900; font-size:17px;">Design #${i}</div>
                     ${isSoon 
-                        ? '<button class="m3-btn" style="opacity:0.4; cursor:default; border-radius:12px;">Coming Soon</button>' 
-                        : `<button class="m3-btn" onclick="add(${i})">Add</button>`}
+                        ? '<button class="m3-btn" style="opacity:0.4; cursor:default; border-radius:12px; background: #e0e0e0; color: #777;">Coming Soon</button>' 
+                        : `<button id="btn-${i}" class="m3-btn" onclick="add(${i})"><span class="material-symbols-outlined" style="font-size:20px;">add_shopping_cart</span> Add</button>`}
                 </div>`;
         }
     </script>
