@@ -8,157 +8,141 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
     <style id="dynamic-theme"></style>
     <style>
-        :root { --spring: cubic-bezier(0.2, 0, 0, 1); --m3-radius-large: 28px; }
+        :root { --spring: cubic-bezier(0.2, 0, 0, 1); --m3-radius: 28px; }
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; margin: 0; padding: 0; transition: all 0.4s var(--spring); }
-        body { font-family: 'Google Sans', sans-serif; background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); }
-        body.lock-scroll { overflow: hidden; height: 100vh; }
+        body { font-family: 'Google Sans', sans-serif; background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); overflow-x: hidden; }
+        
+        /* Fixed Header & Logo */
+        .header { padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--md-sys-color-surface); z-index: 1000; }
+        .logo-img { width: 42px; height: 42px; border-radius: 10px; border: 1px solid var(--md-sys-color-outline-variant); }
 
-        /* M3 Navigation & Burger Menu */
-        .header { padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--md-sys-color-surface); z-index: 1000; }
-        .logo-img { width: 44px; height: 44px; border-radius: 12px; object-fit: cover; }
-        .burger-menu { position: fixed; inset: 0 0 0 -100%; width: 280px; background: var(--md-sys-color-surface-container-low); z-index: 5000; transition: transform 0.4s var(--spring); padding: 24px; box-shadow: var(--md-sys-elevation-3); }
-        .burger-menu.active { transform: translateX(100%); }
+        /* Optimized Burger Menu */
+        .burger-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--md-sys-color-surface-container-low); z-index: 5000; transition: left 0.4s var(--spring); padding: 24px; box-shadow: var(--md-sys-elevation-3); }
+        .burger-menu.active { left: 0; }
 
-        /* Grid & Cards */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; padding: 16px; padding-bottom: 140px; }
-        .card { background: var(--md-sys-color-surface-container-low); border-radius: var(--m3-radius-large); padding: 12px; border: 1px solid var(--md-sys-color-outline-variant); }
-        .card img { width: 100%; aspect-ratio: 1/1; border-radius: 18px; object-fit: cover; background: #eee; }
+        /* Grid System */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; padding: 16px; padding-bottom: 120px; }
+        .card { background: var(--md-sys-color-surface-container-low); border-radius: var(--m3-radius); padding: 12px; border: 1px solid var(--md-sys-color-outline-variant); text-align: center; }
+        .card img { width: 100%; aspect-ratio: 1/1; border-radius: 20px; object-fit: cover; margin-bottom: 10px; }
 
-        /* Pages & Sheets */
-        .page { position: fixed; inset: 0; background: var(--md-sys-color-surface); z-index: 4000; transform: translateX(100%); overflow-y: auto; }
-        .page.active { transform: translateX(0); }
-        .sheet { position: fixed; inset: 0; z-index: 3000; transform: translateY(115%); background: var(--md-sys-color-surface-container-highest); display: none; flex-direction: column; border-radius: 32px 32px 0 0; }
-        .sheet.active { transform: translateY(0); display: flex; }
-        #scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 2500; opacity: 0; pointer-events: none; backdrop-filter: blur(4px); }
+        /* PAXI & Sheets */
+        .page { position: fixed; inset: 0; background: var(--md-sys-color-surface); z-index: 4000; transform: translateX(100%); overflow-y: auto; visibility: hidden; transition: transform 0.4s var(--spring), visibility 0.4s; }
+        .page.active { transform: translateX(0); visibility: visible; }
+        .sheet { position: fixed; inset: 0; z-index: 3000; transform: translateY(115%); background: var(--md-sys-color-surface-container-highest); display: flex; flex-direction: column; border-radius: 32px 32px 0 0; transition: transform 0.5s var(--spring); }
+        .sheet.active { transform: translateY(0); }
+        #scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2500; opacity: 0; pointer-events: none; backdrop-filter: blur(4px); transition: opacity 0.4s; }
         #scrim.active { opacity: 1; pointer-events: auto; }
 
-        /* Buttons & Toggles */
-        .btn { border: none; height: 48px; border-radius: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 100%; }
+        /* UI Elements */
+        .btn { border: none; height: 48px; border-radius: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 100%; gap: 8px; }
         .btn-primary { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
         .btn-tonal { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); }
-        .delivery-toggle { display: flex; background: var(--md-sys-color-surface-container-high); border-radius: 16px; padding: 4px; margin: 12px 0; }
-        .toggle-opt { flex: 1; border: none; background: transparent; padding: 10px; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; }
-        .toggle-opt.active { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
-        #bag-fab { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); width: calc(100% - 48px); max-width: 400px; height: 72px; background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); border-radius: 24px; z-index: 1000; font-weight: 700; border: none; font-size: 18px; }
+        #bag-fab { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; height: 64px; background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); border-radius: 20px; z-index: 1000; font-weight: 700; border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body>
     <div id="scrim" onclick="MODULE_UI.closeAll()"></div>
 
     <nav id="burger-menu" class="burger-menu">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 32px;">
-            <img src="Logo.jpg" class="logo-img" alt="Logo">
-            <h2 style="font-size: 20px;">Menu</h2>
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:32px;">
+            <img src="Logo.jpg" class="logo-img" onerror="this.src='https://placehold.co/44'">
+            <h2 style="font-size: 20px;">Otaku Beads</h2>
         </div>
         <button class="btn-tonal" style="margin-bottom:12px; justify-content:flex-start; padding-left:16px;" onclick="MODULE_UI.togglePage('paxi-page', true)">
-            <span class="material-symbols-rounded">local_shipping</span> PAXI Finder
+            <span class="material-symbols-rounded">local_shipping</span> PAXI Info
         </button>
         <button class="btn-tonal" style="justify-content:flex-start; padding-left:16px;" onclick="THEME_ENGINE.toggle()">
-            <span class="material-symbols-rounded">brightness_auto</span> Appearance
+            <span class="material-symbols-rounded">palette</span> Switch Theme
         </button>
     </nav>
 
     <header class="header">
-        <button class="btn-tonal" style="width:44px; height:44px; border-radius:12px;" onclick="MODULE_UI.toggleBurger(true)">
+        <button class="btn-tonal" style="width:40px; height:40px; border-radius:10px;" onclick="MODULE_UI.toggleBurger(true)">
             <span class="material-symbols-rounded">menu</span>
         </button>
-        <img src="Logo.jpg" class="logo-img" alt="Otaku Logo">
-        <div style="width:44px;"></div>
+        <img src="Logo.jpg" class="logo-img" alt="Logo">
+        <div style="width:40px;"></div>
     </header>
 
     <main class="grid" id="main-grid"></main>
 
     <div id="paxi-page" class="page">
-        <div style="padding: 16px 24px; position: sticky; top: 0; background: var(--md-sys-color-surface);">
-            <button class="btn-tonal" style="width:44px; height:44px; border-radius:22px;" onclick="MODULE_UI.togglePage('paxi-page', false)"><span class="material-symbols-rounded">arrow_back</span></button>
+        <div style="padding: 16px; background: #005eb8; color: white; text-align: center;">
+            <button onclick="MODULE_UI.togglePage('paxi-page', false)" style="position:absolute; left:16px; background:none; border:none; color:white;"><span class="material-symbols-rounded">arrow_back</span></button>
+            <h2 style="font-size: 22px;">PAXI Store Delivery</h2>
+            <p style="font-size: 13px; opacity: 0.9;">Collect from PEP, Shoe Zone, or Tekkie Town</p>
         </div>
         <div style="padding: 24px;">
-            <h2>PAXI Finder</h2>
-            <input type="text" id="paxi-search" style="width:100%; height:56px; border-radius:12px; border:2px solid var(--md-sys-color-outline); background:transparent; padding:0 16px; margin:20px 0;" placeholder="Search City/Suburb..." oninput="MODULE_PAXI.search(this.value)">
-            <div id="paxi-results"></div>
+            <div style="background:var(--md-sys-color-surface-container-high); padding:20px; border-radius:20px; margin-bottom:16px;">
+                <h3 style="margin-bottom:8px;">1. Choose Store</h3>
+                <p style="font-size:14px; opacity:0.8;">Find your nearest point at paxi.co.za</p>
+            </div>
+            <div style="background:var(--md-sys-color-surface-container-high); padding:20px; border-radius:20px;">
+                <h3 style="margin-bottom:8px;">2. Payment</h3>
+                <p style="font-size:14px;">• R60 (Standard: 7-9 days)</p>
+                <p style="font-size:14px;">• R100 (Express: 3-5 days)</p>
+            </div>
         </div>
     </div>
 
-    <button id="bag-fab" onclick="MODULE_UI.toggleBag(true)">Bag (<span id="bag-count">0</span>)</button>
+    <button id="bag-fab" onclick="MODULE_UI.toggleBag(true)">View Bag (<span id="bag-count">0</span>)</button>
 
     <div id="bag-sheet" class="sheet">
         <div style="height: 4px; width: 32px; background: var(--md-sys-color-outline); border-radius: 2px; margin: 12px auto; opacity: 0.2;"></div>
         <div id="bag-items" style="flex: 1; overflow-y: auto; padding: 16px;"></div>
         <div style="padding: 24px; background: var(--md-sys-color-surface-container-high); border-radius: 32px 32px 0 0;">
-            <div class="delivery-toggle">
-                <button id="std-btn" class="toggle-opt active" onclick="MODULE_CORE.setSpeed('std')">Standard (R60)</button>
-                <button id="exp-btn" class="toggle-opt" onclick="MODULE_CORE.setSpeed('exp')">Express (R100)</button>
-            </div>
             <div style="display:flex; justify-content: space-between; margin-bottom: 20px;">
-                <span style="opacity:0.7">Total Amount</span>
+                <span style="opacity:0.7">Grand Total</span>
                 <span id="bag-total" style="font-size: 24px; font-weight: 900; color: var(--md-sys-color-primary);">R 0.00</span>
             </div>
-            <button class="btn btn-primary" style="height: 64px; border-radius: 20px;" onclick="MODULE_CORE.checkout()">Confirm on WhatsApp</button>
+            <button class="btn btn-primary" onclick="MODULE_CORE.checkout()">Confirm on WhatsApp</button>
         </div>
     </div>
 
     <script>
         const THEME_ENGINE = {
             apply() {
-                const mode = localStorage.getItem('theme_mode') || 'dark';
-                const isDark = mode === 'dark';
-                const css = `:root { 
-                    --md-sys-color-primary: ${isDark ? '#D0BCFF' : '#6750A4'};
-                    --md-sys-color-surface: ${isDark ? '#141218' : '#FEF7FF'};
-                    --md-sys-color-on-surface: ${isDark ? '#E6E1E5' : '#1D1B20'};
-                    --md-sys-color-surface-container-low: ${isDark ? '#1D1B20' : '#F7F2FA'};
-                    --md-sys-color-surface-container-high: ${isDark ? '#2B2930' : '#ECE6F0'};
-                    --md-sys-color-surface-container-highest: ${isDark ? '#332F37' : '#E6E0E9'};
-                    --md-sys-color-outline-variant: ${isDark ? '#44474F' : '#CAC4D0'};
-                }`;
-                document.getElementById('dynamic-theme').innerHTML = css;
+                const isDark = (localStorage.getItem('theme_mode') || 'dark') === 'dark';
+                const t = isDark ? 
+                    { pri: "#D0BCFF", sur: "#141218", onS: "#E6E1E5", cL: "#1D1B20", cH: "#2B2930", cHi: "#332F37" } : 
+                    { pri: "#6750A4", sur: "#FEF7FF", onS: "#1D1B20", cL: "#F7F2FA", cH: "#ECE6F0", cHi: "#E6E0E9" };
+                document.getElementById('dynamic-theme').innerHTML = `:root { 
+                    --md-sys-color-primary: ${t.pri}; --md-sys-color-surface: ${t.sur}; --md-sys-color-on-surface: ${t.onS};
+                    --md-sys-color-surface-container-low: ${t.cL}; --md-sys-color-surface-container-high: ${t.cH};
+                    --md-sys-color-surface-container-highest: ${t.cHi}; --md-sys-color-outline-variant: #44474F;
+                    --md-sys-elevation-3: 0px 4px 10px rgba(0,0,0,0.3); }`;
             },
-            toggle() { localStorage.setItem('theme_mode', localStorage.getItem('theme_mode') === 'dark' ? 'light' : 'dark'); this.apply(); }
+            toggle() { localStorage.setItem('theme_mode', (localStorage.getItem('theme_mode')==='dark'?'light':'dark')); this.apply(); }
         };
 
         const MODULE_CORE = {
-            cart: [], speed: 'std',
-            setSpeed(s) { this.speed = s; document.getElementById('std-btn').classList.toggle('active', s==='std'); document.getElementById('exp-btn').classList.toggle('active', s==='exp'); this.updateUI(); },
+            cart: [],
             add(id) { this.cart.push(id); this.updateUI(); },
             updateUI() {
                 document.getElementById('bag-count').innerText = this.cart.length;
-                let itemsTotal = this.cart.reduce((sum, id) => sum + (id <= 2 ? 45 : 65), 0);
-                let grand = itemsTotal + (this.speed === 'std' ? 60 : 100);
-                document.getElementById('bag-total').innerText = `R ${grand}.00`;
+                let total = this.cart.reduce((s, id) => s + (id <= 2 ? 45 : 65), 0);
+                document.getElementById('bag-total').innerText = `R ${total}.00`;
                 this.renderBag();
             },
             renderBag() {
                 const list = document.getElementById('bag-items');
                 const counts = this.cart.reduce((a,c)=>{ a[c]=(a[c]||0)+1; return a; }, {});
                 list.innerHTML = Object.keys(counts).map(id => `<div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; background:var(--md-sys-color-surface-container-low); padding:10px; border-radius:16px;">
-                    <img src="${id}.jpg" style="width:44px; height:44px; border-radius:8px;" onerror="this.src='Logo.jpg'">
-                    <div style="flex:1; font-weight:700;">#${id}</div>
+                    <img src="${id}.jpg" style="width:50px; height:50px; border-radius:8px;" onerror="this.src='Logo.jpg'">
+                    <div style="flex:1; font-weight:700;">Design #${id}</div>
                     <div style="font-weight:900;">x${counts[id]}</div>
-                </div>`).join('') || '<div style="text-align:center; opacity:0.3; padding:40px;">Empty</div>';
+                </div>`).join('') || '<p style="text-align:center; opacity:0.5; padding:40px;">Bag is empty</p>';
             },
             checkout() {
-                const paxi = JSON.parse(localStorage.getItem('saved_paxi'));
-                let m = `🚚 *Otaku Order (${this.speed.toUpperCase()})* 🚚%0A%0A`;
+                let m = "*Otaku Beads Order*%0A%0A";
                 this.cart.forEach(id => m += `▪️ Design #${id}%0A`);
-                if(paxi) m += `%0A📍 *PAXI Point:* ${paxi.name} (${paxi.code})`;
                 window.open(`https://wa.me/27XXXXXXXXX?text=${m}`);
             }
         };
 
-        const MODULE_PAXI = {
-            db: [{ n: "PEP Cape Town", c: "P8801", s: "Cape Town" }, { n: "Shoe Zone Durban", c: "P1102", s: "Durban" }],
-            search(q) {
-                const res = document.getElementById('paxi-results');
-                if(q.length < 2) return;
-                const filtered = this.db.filter(i => i.s.toLowerCase().includes(q.toLowerCase()));
-                res.innerHTML = filtered.map(i => `<div style="padding:12px; border-bottom:1px solid var(--md-sys-color-outline-variant);" onclick="MODULE_PAXI.select('${i.n}','${i.c}')"><strong>${i.n}</strong><br><small>${i.c}</small></div>`).join('') || '<p style="padding:12px; opacity:0.5;">No store found.</p>';
-            },
-            select(n, c) { localStorage.setItem('saved_paxi', JSON.stringify({name:n, code:c})); alert("PAXI Point Saved!"); MODULE_UI.togglePage('paxi-page', false); }
-        };
-
         const MODULE_UI = {
-            toggleBurger(s) { document.getElementById('burger-menu').classList.toggle('active', s); document.getElementById('scrim').classList.toggle('active', s); },
-            toggleBag(s) { const sheet = document.getElementById('bag-sheet'); sheet.style.display = s ? 'flex' : 'none'; setTimeout(() => sheet.classList.toggle('active', s), 10); document.getElementById('scrim').classList.toggle('active', s); },
+            toggleBurger(s) { document.getElementById('burger-menu').style.left = s ? '0' : '-280px'; document.getElementById('scrim').classList.toggle('active', s); },
+            toggleBag(s) { document.getElementById('bag-sheet').classList.toggle('active', s); document.getElementById('scrim').classList.toggle('active', s); },
             togglePage(id, s) { document.getElementById(id).classList.toggle('active', s); if(!s) this.toggleBurger(false); },
             closeAll() { this.toggleBurger(false); this.toggleBag(false); }
         };
@@ -168,17 +152,13 @@
             let html = "";
             for(let i=1; i<=28; i++) {
                 if(i === 26) {
-                    html += `<div class="card" style="opacity:0.5; filter:grayscale(1);">
-                        <img src="26.jpg" onerror="this.src='Logo.jpg'">
-                        <div style="font-weight:700; margin:8px 0;">Design #26</div>
-                        <button class="btn btn-tonal" disabled>Coming Soon</button>
-                    </div>`;
+                    html += `<div class="card" style="opacity:0.6; filter:grayscale(1);"><img src="26.jpg" onerror="this.src='Logo.jpg'"><div style="font-weight:700;">#26</div><button class="btn btn-tonal" disabled>Coming Soon</button></div>`;
                 } else {
                     html += `<div class="card">
                         <img src="${i}.jpg" onerror="this.src='Logo.jpg'">
-                        <div style="font-weight:700; margin-top:8px;">Design #${i}</div>
-                        <div style="color:var(--md-sys-color-primary); font-weight:900;">R ${i<=2?45:65}.00</div>
-                        <button class="btn btn-primary" style="margin-top:12px;" onclick="MODULE_CORE.add(${i})">Add</button>
+                        <div style="font-weight:700;">Design #${i}</div>
+                        <div style="color:var(--md-sys-color-primary); font-weight:900; margin-bottom:8px;">R ${i<=2?45:65}.00</div>
+                        <button class="btn btn-primary" onclick="MODULE_CORE.add(${i})">Add</button>
                     </div>`;
                 }
             }
