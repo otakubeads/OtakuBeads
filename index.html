@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Otaku Beads | Official</title>
+    <title>Otaku Beads | Master</title>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
     
@@ -22,19 +22,13 @@
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Google Sans', sans-serif; background: var(--md-sys-color-surface); color: #1D1B20; }
         .header { padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--md-sys-color-surface); z-index: 1000; }
-        
-        /* Promo Section */
-        .promo-banner { margin: 16px; padding: 20px; background: var(--md-sys-color-primary); color: white; border-radius: 28px; display: flex; align-items: center; gap: 16px; box-shadow: 0 4px 12px rgba(103, 80, 164, 0.2); }
-        
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; padding: 16px; padding-bottom: 120px; }
         .card { background: var(--md-sys-color-surface-container-low); border-radius: 28px; padding: 12px; border: 1px solid var(--md-sys-color-outline-variant); text-align: center; }
         .card img { width: 100%; aspect-ratio: 1/1; border-radius: 22px; object-fit: cover; }
-        
         .sheet { position: fixed; inset: 0; z-index: 5000; transform: translateY(115%); background: var(--md-sys-color-surface-container-highest); border-radius: 32px 32px 0 0; transition: transform 0.4s var(--spring); display: flex; flex-direction: column; }
         .sheet.active { transform: translateY(0); }
         #scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 4500; opacity: 0; pointer-events: none; backdrop-filter: blur(8px); transition: opacity 0.3s; }
         #scrim.active { opacity: 1; pointer-events: auto; }
-        
         .btn-fab { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 400px; height: 64px; background: var(--md-sys-color-primary); color: white; border-radius: 24px; border: none; font-weight: 700; z-index: 1001; display: flex; align-items: center; justify-content: center; gap: 12px; }
         .badge { background: #B3261E; color: white; min-width: 20px; height: 20px; border-radius: 10px; font-size: 12px; display: flex; align-items: center; justify-content: center; padding: 0 6px; }
     </style>
@@ -48,11 +42,20 @@
         <div style="width:32px;"></div>
     </header>
 
-    <div class="promo-banner">
+    <div id="menu-sheet" class="sheet" style="width:300px; height:100%; border-radius:0 32px 32px 0; transform:translateX(-100%); left:0; right:auto;">
+       <div style="padding: 24px;">
+           <h2 style="margin-bottom:24px;">Otaku Beads</h2>
+           <button class="card" style="width:100%; padding:16px; cursor:pointer; display:flex; gap:12px; align-items:center;" onclick="MODULE_UI.toggle('paxi', true)">
+               <span class="material-symbols-rounded">local_shipping</span> PAXI Guide
+           </button>
+       </div>
+    </div>
+
+    <div style="margin: 16px; padding: 20px; background: var(--md-sys-color-primary); color: white; border-radius: 28px; display: flex; align-items: center; gap: 16px;">
         <span class="material-symbols-rounded" style="font-size:40px;">celebration</span>
         <div>
             <h3 style="font-size: 18px;">Buy 2 Get 1 FREE!</h3>
-            <p style="font-size: 14px; opacity: 0.9;">Add any 3 to your bag to apply.</p>
+            <p style="font-size: 14px; opacity: 0.9;">Limited time offer on all designs.</p>
         </div>
     </div>
 
@@ -81,20 +84,12 @@
     <script>
         const MODULE_CORE = {
             cart: [],
-            add(id) {
-                this.cart.push(id);
-                this.updateUI();
-            },
+            add(id) { this.cart.push(id); this.updateUI(); },
             updateUI() {
                 const count = this.cart.length;
-                const badge = document.getElementById('badge-count');
-                badge.innerText = count;
-                badge.style.display = count > 0 ? 'flex' : 'none';
-                
-                // Logic for "Buy 2 Get 1 Free"
+                document.getElementById('badge-count').innerText = count;
+                document.getElementById('badge-count').style.display = count > 0 ? 'flex' : 'none';
                 let total = this.cart.reduce((s, id) => s + (id <= 2 ? 45 : 65), 0);
-                if(this.cart.length >= 3) { total -= 45; } // Example promo math
-                
                 document.getElementById('bag-total').innerText = `R ${total}.00`;
                 this.renderBag();
             },
@@ -109,16 +104,23 @@
                     <div>x${counts[id]}</div>
                 </div>`).join('');
             },
-            checkout() { /* WhatsApp Logic */ }
+            checkout() {
+                let m = "*Otaku Order*%0A";
+                const counts = this.cart.reduce((a,c)=>{ a[c]=(a[c]||0)+1; return a; }, {});
+                Object.keys(counts).forEach(id => m += `✅ #${id} x${counts[id]}%0A`);
+                window.open(`https://wa.me/27XXXXXXXXX?text=${m}`);
+            }
         };
 
         const MODULE_UI = {
             toggle(id, s) {
-                document.getElementById(id + '-sheet').classList.toggle('active', s);
+                const el = document.getElementById(id + '-sheet');
+                if(id === 'menu') el.style.transform = s ? "translateX(0)" : "translateX(-100%)";
+                else el.classList.toggle('active', s);
                 document.getElementById('scrim').classList.toggle('active', s);
             },
             closeAll() {
-                document.querySelectorAll('.sheet').forEach(s => s.classList.remove('active'));
+                document.querySelectorAll('.sheet').forEach(s => { s.classList.remove('active'); if(s.id==='menu-sheet') s.style.transform="translateX(-100%)"; });
                 document.getElementById('scrim').classList.remove('active');
             }
         };
@@ -127,11 +129,11 @@
             const grid = document.getElementById('main-grid');
             let h = "";
             for(let i=1; i<=28; i++) {
-                if(i === 26) { // Placeholder for Design #26
+                if(i === 26) {
                     h += `<div class="card" style="opacity:0.5; filter:grayscale(1);">
                         <img src="26.jpg" onerror="this.src='Logo.jpg'">
                         <div style="font-weight:700; margin:10px 0;">Design #26</div>
-                        <button disabled style="width:100%; height:40px; border-radius:20px; border:none;">Coming Soon</button>
+                        <button disabled style="width:100%; height:40px; border-radius:20px; border:none; background:#ccc;">Coming Soon</button>
                     </div>`;
                 } else {
                     h += `<div class="card">
