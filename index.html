@@ -2,215 +2,207 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Otaku Beads | Final M3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Otaku Beads | Locked Master</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" rel="stylesheet">
     <style>
         :root { 
-            --p: #6750A4; --on-p: #ffffff; --s: #FEF7FF; --sc: #F3EDF7; 
-            --sec-c: #E8DEF8; --on-sec-c: #1D192B; --out: #CAC4D0; --err: #B3261E;
+            --p: #6750A4; --s: #FEF7FF; --sc: #F3EDF7; --err: #B3261E;
             --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Roboto', sans-serif; background: var(--s); color: #1C1B1F; overflow-x: hidden; }
+        body { font-family: 'Roboto', sans-serif; background: var(--s); overflow-x: hidden; -webkit-user-select: none; }
 
-        /* M3 TIMER WITH CONTEXT */
-        .timer-bar { position: sticky; top: 0; z-index: 1100; display: flex; justify-content: center; width: 100%; height: 70px; pointer-events: none; }
-        .timer-pill { 
-            background: var(--p); color: white; padding: 12px 24px; border-radius: 30px; font-weight: 900; 
-            box-shadow: 0 8px 20px rgba(103,80,164,0.3); transform: translateY(15px); pointer-events: auto;
-            display: flex; flex-direction: column; align-items: center; text-align: center;
-            animation: breathe 2s infinite ease-in-out;
-        }
-        .timer-label { font-size: 10px; opacity: 0.9; letter-spacing: 1px; margin-bottom: 2px; }
-        @keyframes breathe { 0%, 100% { transform: translateY(15px) scale(1); } 50% { transform: translateY(15px) scale(1.05); } }
+        /* --- UI BARRIERS --- */
+        .timer-bar { position: sticky; top: 0; z-index: 1100; display: flex; justify-content: center; height: 80px; pointer-events: none; }
+        .timer-pill { background: var(--p); color: white; padding: 12px 24px; border-radius: 30px; font-weight: 900; transform: translateY(15px); pointer-events: auto; box-shadow: 0 10px 20px rgba(103,80,164,0.3); text-align: center; }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px; padding-bottom: 160px; }
+        .card { background: white; border-radius: 32px; padding: 12px; display: flex; flex-direction: column; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .card img { width: 100%; aspect-ratio: 1/1; border-radius: 24px; object-fit: cover; margin-bottom: 12px; background: #eee; }
 
-        /* HEADER */
-        .header { display: flex; align-items: center; padding: 20px 16px; background: var(--s); }
-        .logo-img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--sec-c); margin-right: 12px; }
-        .brand-name { font-weight: 900; font-size: 24px; color: var(--p); flex: 1; }
-
-        /* GRID & CARDS */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px; padding-bottom: 120px; }
-        .card { background: white; border-radius: 32px; padding: 12px; display: flex; flex-direction: column; position: relative; transition: 0.3s var(--spring); }
-        .card img { width: 100%; aspect-ratio: 1/1; border-radius: 24px; object-fit: cover; margin-bottom: 12px; }
-
-        /* M3 BUTTONS */
-        .btn { border: none; height: 52px; border-radius: 26px; font-weight: 700; cursor: pointer; transition: 0.3s var(--spring); display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn { border: none; height: 48px; border-radius: 24px; font-weight: 700; cursor: pointer; transition: 0.3s var(--spring); width: 100%; margin-top: 8px; }
         .btn:active { transform: scale(0.92); }
         .btn-p { background: var(--p); color: white; }
-        .btn-added { background: var(--sec-c); color: var(--on-sec-c); }
+        .btn-info { background: var(--sc); color: var(--p); font-size: 13px; }
 
-        /* SEALED BAG BARRIER - NO PEEKING */
-        .bag-view { 
-            position: fixed; inset: 0; background: var(--s); z-index: 3000; 
-            transform: translateY(100%); transition: transform 0.5s cubic-bezier(0.05, 0.7, 0.1, 1);
-            display: flex; flex-direction: column; height: 100vh; width: 100vw;
-        }
+        /* --- BAG & BOTTOM SEAL --- */
+        .bag-view { position: fixed; inset: 0; background: var(--s); z-index: 3000; transform: translateY(100%); transition: transform 0.5s var(--spring); display: flex; flex-direction: column; }
         .bag-view.active { transform: translateY(0); }
+        .bag-footer { padding: 24px 24px calc(32px + env(safe-area-inset-bottom)); background: white; border-radius: 40px 40px 0 0; box-shadow: 0 -15px 40px rgba(0,0,0,0.12); z-index: 3100; flex-shrink: 0; }
 
-        /* QTY CONTROLLERS */
-        .qty-ctrl { display: flex; align-items: center; background: var(--sc); border-radius: 28px; padding: 4px; gap: 12px; }
-        .ctrl-btn { 
-            width: 44px; height: 44px; border-radius: 22px; border: none; background: white; 
-            color: var(--p); font-size: 20px; font-weight: 900; transition: 0.2s var(--spring);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .ctrl-btn:active { transform: scale(0.7); background: var(--p); color: white; }
+        /* --- SEPARATED CONTROLS --- */
+        .qty-ctrl { display: flex; align-items: center; gap: 14px; }
+        .ctrl-btn { width: 44px; height: 44px; border-radius: 12px; border: none; background: var(--sc); color: var(--p); font-weight: 900; font-size: 20px; transition: 0.2s; }
+        .ctrl-btn:active { transform: scale(0.8); background: var(--p); color: white; }
 
-        /* TOAST NOTIFICATION */
-        #toast {
-            position: fixed; bottom: 110px; left: 50%; transform: translateX(-50%) translateY(100px);
-            background: #313033; color: white; padding: 14px 24px; border-radius: 12px;
-            font-size: 14px; font-weight: 500; z-index: 4000; transition: 0.4s var(--spring); opacity: 0;
-        }
+        /* --- POPUP & TOAST --- */
+        .popup-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 5000; display: none; align-items: center; justify-content: center; padding: 24px; backdrop-filter: blur(4px); }
+        .popup-content { background: white; border-radius: 32px; padding: 32px; text-align: center; max-width: 400px; animation: pop 0.5s var(--spring); }
+        @keyframes pop { from { transform: translateY(50px) scale(0.9); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+
+        #toast { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%) translateY(100px); background: #313033; color: white; padding: 14px 24px; border-radius: 25px; z-index: 4000; transition: 0.4s var(--spring); opacity: 0; pointer-events: none; }
         #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-
-        .fab { position: fixed; bottom: 24px; left: 24px; right: 24px; height: 72px; background: var(--p); color: white; border-radius: 24px; border: none; font-weight: 900; box-shadow: 0 10px 25px rgba(103,80,164,0.4); z-index: 1001; }
     </style>
 </head>
 <body>
 
-    <div id="toast">Item updated</div>
-
-    <div class="timer-bar">
-        <div id="t-pill" class="timer-pill">
-            <span class="timer-label">PROMO ENDS IN:</span>
-            <span id="t-text">00:00:00</span>
+    <div id="urgency-popup" class="popup-overlay">
+        <div class="popup-content">
+            <span class="material-symbols-outlined" style="font-size: 56px; color: var(--err)">speed</span>
+            <h2 style="margin: 16px 0; font-weight: 900; font-size: 24px;">ACT FAST!</h2>
+            <p style="opacity: 0.7; margin-bottom: 24px; line-height: 1.5;">Our Promo Designs #1 & #2 are expiring in less than 2 hours. Don't miss out!</p>
+            <button class="btn btn-p" style="height: 60px;" onclick="document.getElementById('urgency-popup').style.display='none'">GOT IT!</button>
         </div>
     </div>
 
-    <header class="header">
+    <div id="toast">Updated</div>
+
+    <div class="timer-bar">
+        <div id="t-pill" class="timer-pill">
+            <span style="font-size: 10px; opacity: 0.8; letter-spacing: 1px;">PROMO ENDS IN:</span>
+            <div id="t-text" style="font-size: 18px;">00:00:00</div>
+        </div>
+    </div>
+
+    <header style="display: flex; align-items: center; padding: 20px 16px;">
         <span class="material-symbols-outlined" style="font-size:32px; color:var(--p)">menu</span>
-        <img src="logo.jpg" class="logo-img" alt="Logo">
-        <span class="brand-name">Otaku Beads</span>
+        <img src="logo.jpg" style="width:44px; height:44px; border-radius:50%; margin: 0 12px;" onerror="this.src='logo.jpg'">
+        <span style="font-weight: 900; font-size: 24px; color: var(--p); flex: 1;">Otaku Beads</span>
     </header>
 
     <main class="grid" id="grid-barrier"></main>
 
-    <button class="fab" onclick="OTAKU.toggleBag(true)">
-        <span class="material-symbols-outlined">shopping_bag</span>
+    <button style="position:fixed; bottom:24px; left:24px; right:24px; height:72px; background:var(--p); color:white; border-radius:24px; border:none; font-weight:900; z-index:1001; box-shadow: 0 10px 25px rgba(103,80,164,0.4);" onclick="MODULE_UI.toggleBag(true)">
+        <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px;">shopping_bag</span>
         Review Bag (<span id="count-barrier">0</span>)
     </button>
 
     <div id="bag-barrier" class="bag-view">
-        <div class="header" style="border-bottom: 1px solid var(--sc); background: var(--s);">
-            <button onclick="OTAKU.toggleBag(false)" style="background:none; border:none"><span class="material-symbols-outlined">close</span></button>
-            <span class="brand-name" style="text-align:center">Review Bag</span>
-            <button onclick="OTAKU.clear()" style="background:var(--sc); color:var(--err); border:none; padding:8px 16px; border-radius:20px; font-weight:900">CLEAR</button>
+        <div style="display: flex; align-items: center; padding: 20px 16px; border-bottom: 1px solid var(--sc); background: white;">
+            <button onclick="MODULE_UI.toggleBag(false)" style="background:none; border:none"><span class="material-symbols-outlined">close</span></button>
+            <span style="font-weight: 900; font-size: 20px; flex: 1; text-align: center;">Review Bag</span>
+            <button onclick="MODULE_CORE.clear()" style="color:var(--err); border:none; background:none; font-weight:900; font-size: 12px;">CLEAR ALL</button>
         </div>
-        <div id="bag-list-barrier" style="flex:1; overflow-y:auto; padding:20px; background: var(--s);"></div>
-        <div style="padding:32px; background:white; border-radius:40px 40px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); z-index:3001;">
-            <button class="btn btn-p" style="height:72px; width:100%" onclick="OTAKU.checkout()">Checkout on WhatsApp</button>
-            <div style="height: 10px;"></div>
+        <div id="bag-list-barrier" style="flex:1; overflow-y:auto; padding:20px;"></div>
+        <div class="bag-footer">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 24px; font-weight: 900;">
+                <span style="opacity: 0.6;">Estimated Total:</span>
+                <span id="total-price" style="font-size: 24px; color: var(--p);">R 0.00</span>
+            </div>
+            <button class="btn btn-p" style="height:64px; font-size: 18px;" onclick="MODULE_CORE.checkout()">Confirm on WhatsApp</button>
         </div>
     </div>
 
     <script>
-        const OTAKU = {
-            deadline: new Date("Jan 31, 2026 23:59:59").getTime(),
-            cart: JSON.parse(localStorage.getItem('otaku_cart')) || [],
-            
-            init() {
-                setInterval(() => this.tick(), 1000);
-                this.render();
-            },
+        /* --- BARRIER: DATA & STORAGE --- */
+        const MODULE_CORE = (() => {
+            const deadline = new Date("Jan 31, 2026 23:59:59").getTime();
+            const prices = { promo: 45, standard: 65 };
+            let cart = JSON.parse(localStorage.getItem('otaku_cart')) || [];
 
-            showToast(msg) {
-                const t = document.getElementById('toast');
-                t.innerText = msg;
-                t.classList.add('show');
-                setTimeout(() => t.classList.remove('show'), 2000);
-            },
-
-            tick() {
-                const diff = this.deadline - new Date().getTime();
-                const text = document.getElementById('t-text');
-                if (diff <= 0) { document.getElementById('t-pill').style.display = 'none'; return; }
-                const d = Math.floor(diff/86400000), h = Math.floor((diff%86400000)/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
-                text.innerText = `${d}D ${h}H ${m}M ${s}S`;
-            },
-
-            add(id) {
-                this.cart.push(id);
-                this.save();
-                this.render();
-                this.showToast(`Design #${id} added`);
-                if(document.getElementById('bag-barrier').classList.contains('active')) this.updateBagUI();
-            },
-
-            remove(id) {
-                const idx = this.cart.lastIndexOf(id);
-                if (idx > -1) {
-                    this.cart.splice(idx, 1);
-                    this.save();
-                    this.render();
-                    this.showToast(`Design #${id} removed`);
-                    if(document.getElementById('bag-barrier').classList.contains('active')) this.updateBagUI();
+            return {
+                getCart: () => cart,
+                getDeadline: () => deadline,
+                getPrice: (id) => id <= 2 ? prices.promo : prices.standard,
+                add(id) { cart.push(id); this.save(); MODULE_UI.toast(`Added Design #${id}`); },
+                remove(id) { const i = cart.lastIndexOf(id); if(i>-1) cart.splice(i,1); this.save(); MODULE_UI.toast(`Removed Design #${id}`); },
+                clear() { if(confirm("Empty your bag?")) { cart=[]; this.save(); MODULE_UI.toggleBag(false); } },
+                save() { 
+                    localStorage.setItem('otaku_cart', JSON.stringify(cart)); 
+                    document.getElementById('count-barrier').innerText = cart.length;
+                    MODULE_RENDERER.refresh();
+                },
+                checkout() {
+                    if(!cart.length) return;
+                    const counts = cart.reduce((a,c)=>{ a[c]=(a[c]||0)+1; return a; }, {});
+                    let m = "Otaku Beads Order:%0A------------------%0A";
+                    Object.keys(counts).forEach(id => m += `• Design #${id} (Qty: ${counts[id]})%0A`);
+                    window.open(`https://wa.me/27XXXXXXXXX?text=${encodeURIComponent(m)}`);
                 }
-            },
+            };
+        })();
 
-            clear() {
-                if(confirm("Empty Bag?")) { this.cart = []; this.save(); this.render(); this.toggleBag(false); }
-            },
-
-            save() {
-                localStorage.setItem('otaku_cart', JSON.stringify(this.cart));
-                document.getElementById('count-barrier').innerText = this.cart.length;
-            },
-
-            toggleBag(show) {
-                const b = document.getElementById('bag-barrier');
-                b.classList.toggle('active', show);
-                document.body.style.overflow = show ? 'hidden' : 'auto';
-                if(show) this.updateBagUI();
-            },
-
-            render() {
-                const grid = document.getElementById('grid-barrier');
-                const isExpired = new Date().getTime() > this.deadline;
-                const counts = this.cart.reduce((a,c)=>{ a[c]=(a[c]||0)+1; return a; }, {});
-                let h = "";
-                for(let i=1; i<=28; i++) {
-                    if(isExpired && i<=2) {
-                        h += `<div class="card"><div style="flex:1; display:flex; align-items:center; text-align:center; color:var(--out); font-weight:700">Promo Ended</div><button class="btn" style="background:#eee; color:#999" disabled>Expired</button></div>`;
-                    } else if(i===26) {
-                        h += `<div class="card"><img src="26.jpg" onerror="this.src='logo.jpg'"><div style="text-align:center; font-weight:900; margin:10px 0">Design #26</div><button class="btn" style="background:#eee; color:#999" disabled>Coming Soon</button></div>`;
-                    } else {
+        /* --- BARRIER: RENDER ENGINE --- */
+        const MODULE_RENDERER = (() => {
+            return {
+                refresh() { this.grid(); this.bag(); },
+                grid() {
+                    const g = document.getElementById('grid-barrier');
+                    const counts = MODULE_CORE.getCart().reduce((a,c)=>{ a[c]=(a[c]||0)+1; return a; }, {});
+                    let h = "";
+                    for(let i=1; i<=28; i++) {
                         const q = counts[i] || 0;
-                        h += `<div class="card">
-                            ${i<=2?'<div style="position:absolute;top:18px;left:18px;background:var(--err);color:white;padding:4px 10px;border-radius:12px;font-size:10px;font-weight:900">PROMO</div>':''}
-                            <img src="${i}.jpg" onerror="this.src='logo.jpg'">
-                            <div style="text-align:center; font-weight:900; margin:10px 0">Design #${i}</div>
-                            <button class="btn ${q>0?'btn-added':'btn-p'}" onclick="OTAKU.add(${i})">${q>0?`<span style="background:var(--p); color:white; padding:2px 8px; border-radius:10px; font-size:10px">${q}</span> Added` : 'Add to Bag'}</button>
-                        </div>`;
+                        const isP = i <= 2;
+                        if(i === 26) {
+                            h += `<div class="card"><img src="26.jpg" onerror="this.src='logo.jpg'"><div style="font-weight:900;">Design #26</div><button class="btn" disabled style="background:#eee; color:#999">Coming Soon</button></div>`;
+                        } else {
+                            h += `<div class="card">
+                                ${isP?'<div class="promo-badge" style="position:absolute;top:18px;left:18px;background:var(--err);color:white;padding:4px 10px;border-radius:12px;font-size:10px;font-weight:900;z-index:2">PROMO</div>':''}
+                                <img src="${i}.jpg" onerror="this.src='logo.jpg'">
+                                <div style="font-weight:900;">Design #${i}</div>
+                                <div style="color:var(--p); font-weight:900; font-size:13px; margin-bottom:4px;">R ${MODULE_CORE.getPrice(i)}.00</div>
+                                <button class="btn btn-info" onclick="alert('Design #${i}: Premium handmade beads.')">More Info</button>
+                                <button class="btn ${q>0?'btn-info':'btn-p'}" onclick="MODULE_CORE.add(${i})">${q>0? q+' In Bag' : 'Add to Bag'}</button>
+                            </div>`;
+                        }
                     }
+                    g.innerHTML = h;
+                },
+                bag() {
+                    const list = document.getElementById('bag-list-barrier');
+                    const counts = MODULE_CORE.getCart().reduce((a,c)=>{ a[c]=(a[c]||0)+1; return a; }, {});
+                    let total = 0;
+                    list.innerHTML = Object.keys(counts).sort((a,b)=>a-b).map(id => {
+                        const p = MODULE_CORE.getPrice(id);
+                        total += (p * counts[id]);
+                        return `<div style="display:flex; align-items:center; gap:16px; margin-bottom:12px; background:white; padding:16px; border-radius:24px; box-shadow:0 4px 10px rgba(0,0,0,0.02);">
+                            <img src="${id}.jpg" style="width:60px; height:60px; border-radius:14px;" onerror="this.src='logo.jpg'">
+                            <div style="flex:1;"><div style="font-weight:900;">Design #${id}</div><div style="color:var(--p); font-size:12px; font-weight:700;">R ${p}.00</div></div>
+                            <div class="qty-ctrl">
+                                <button class="ctrl-btn" onclick="MODULE_CORE.remove(${id})">—</button>
+                                <span style="font-weight:900; min-width:20px; text-align:center;">${counts[id]}</span>
+                                <button class="ctrl-btn" onclick="MODULE_CORE.add(${id})">+</button>
+                            </div>
+                        </div>`;
+                    }).join('') || '<p style="text-align:center; opacity:0.5; margin-top:50px; font-weight:900;">YOUR BAG IS EMPTY</p>';
+                    document.getElementById('total-price').innerText = `R ${total}.00`;
                 }
-                grid.innerHTML = h;
-            },
+            };
+        })();
 
-            updateBagUI() {
-                const container = document.getElementById('bag-list-barrier');
-                const counts = this.cart.reduce((a,c)=>{ a[c]=(a[c]||0)+1; return a; }, {});
-                if(!this.cart.length) { container.innerHTML = '<p style="text-align:center; opacity:0.5; margin-top:50px">EMPTY</p>'; return; }
-                container.innerHTML = Object.keys(counts).sort((a,b)=>a-b).map(id => `
-                    <div style="display:flex; align-items:center; gap:16px; padding:16px; background:white; border-radius:28px; margin-bottom:12px;">
-                        <img src="${id}.jpg" style="width:64px; height:64px; border-radius:18px" onerror="this.src='logo.jpg'">
-                        <div style="flex:1; font-weight:900">Design #${id}</div>
-                        <div class="qty-ctrl">
-                            <button class="ctrl-btn" onclick="OTAKU.remove(${id})">—</button>
-                            <span style="font-weight:900; min-width:24px; text-align:center">${counts[id]}</span>
-                            <button class="ctrl-btn" onclick="OTAKU.add(${id})">+</button>
-                        </div>
-                    </div>
-                `).join('');
+        /* --- BARRIER: UI INTERACTION --- */
+        const MODULE_UI = {
+            toggleBag(s) { 
+                document.getElementById('bag-barrier').classList.toggle('active', s); 
+                document.body.style.overflow = s ? 'hidden':'auto'; 
             },
-
-            checkout() { if(this.cart.length) window.open(`https://wa.me/27XXXXXXXXX?text=Order Request:%0A${this.cart.join(", ")}`); }
+            toast(m) {
+                const t = document.getElementById('toast');
+                t.innerText = m; t.classList.add('show');
+                setTimeout(() => t.classList.remove('show'), 2000);
+            }
         };
 
-        OTAKU.init();
+        /* --- MAIN INITIALIZER --- */
+        (function() {
+            MODULE_RENDERER.refresh();
+            document.getElementById('count-barrier').innerText = MODULE_CORE.getCart().length;
+            
+            setInterval(() => {
+                const diff = MODULE_CORE.getDeadline() - Date.now();
+                if(diff <= 0) return;
+                const d = Math.floor(diff/86400000), h = Math.floor((diff%86400000)/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
+                document.getElementById('t-text').innerText = `${d}D ${h}H ${m}M ${s}S`;
+                
+                // Urgency Logic
+                if(d === 0 && h < 2 && !sessionStorage.getItem('notified')) {
+                    document.getElementById('urgency-popup').style.display = 'flex';
+                    sessionStorage.setItem('notified', 'true');
+                }
+            }, 1000);
+        })();
     </script>
 </body>
 </html>
