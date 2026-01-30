@@ -24,31 +24,27 @@
     <style>
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Google Sans', sans-serif; background: var(--md-sys-color-surface); color: #1D1B20; overflow-x: hidden; }
-        
-        /* HEADER & GRID */
         .header { padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--md-sys-color-surface); z-index: 1000; }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; padding: 16px; padding-bottom: 120px; }
-        .card { background: var(--md-sys-color-surface-container-low); border-radius: 28px; padding: 12px; border: 1px solid var(--md-sys-color-outline-variant); text-align: center; }
+        .card { background: var(--md-sys-color-surface-container-low); border-radius: 28px; padding: 12px; border: 1px solid var(--md-sys-color-outline-variant); text-align: center; transition: 0.2s; }
         .card img { width: 100%; aspect-ratio: 1/1; border-radius: 22px; object-fit: cover; }
         
-        /* OVERLAYS */
         #scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 4500; opacity: 0; pointer-events: none; backdrop-filter: blur(4px); transition: opacity 0.3s; }
         #scrim.active { opacity: 1; pointer-events: auto; }
         
-        .drawer { position: fixed; top: 0; left: 0; width: 320px; height: 100%; background: var(--md-sys-color-surface-container-low); z-index: 6000; transform: translateX(-100%); transition: transform 0.4s var(--spring); padding: 24px; border-radius: 0 28px 28px 0; box-shadow: 8px 0 32px rgba(0,0,0,0.1); }
+        .drawer { position: fixed; top: 0; left: 0; width: 320px; height: 100%; background: var(--md-sys-color-surface-container-low); z-index: 6000; transform: translateX(-100%); transition: transform 0.4s var(--spring); padding: 24px; border-radius: 0 28px 28px 0; }
         .drawer.active { transform: translateX(0); }
         
         .sheet { position: fixed; inset: 0; z-index: 5000; transform: translateY(115%); background: var(--md-sys-color-surface-container-highest); border-radius: 32px 32px 0 0; transition: transform 0.4s var(--spring); display: flex; flex-direction: column; }
         .sheet.active { transform: translateY(0); }
 
-        /* M3 ELEMENTS */
-        .btn-m3 { border-radius: 24px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.1s; }
-        .btn-m3:active { scale: 0.96; }
+        .btn-m3 { border-radius: 24px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .nav-item { display: flex; align-items: center; gap: 12px; padding: 16px; border-radius: 16px; margin-bottom: 8px; cursor: pointer; color: #1D1B20; text-decoration: none; font-weight: 500; background: white; }
         
-        /* CHECKOUT TOGGLE */
-        .ship-opt { flex: 1; text-align: center; padding: 12px; border-radius: 100px; cursor: pointer; font-size: 12px; font-weight: 700; }
+        .ship-opt { flex: 1; text-align: center; padding: 12px; border-radius: 100px; cursor: pointer; font-size: 11px; font-weight: 700; }
         .ship-opt.active { background: var(--md-sys-color-primary); color: white; }
+        
+        .info-box { margin: 0 24px 16px; padding: 12px 16px; background: white; border-radius: 16px; font-size: 13px; border: 1px dashed var(--md-sys-color-outline-variant); display: flex; gap: 10px; align-items: flex-start; }
     </style>
 </head>
 <body>
@@ -78,38 +74,40 @@
             <button onclick="UI.closeAll()" style="background:var(--md-sys-color-surface-container-high); border:none; width:40px; height:40px; border-radius:20px;"><span class="material-symbols-rounded">close</span></button>
         </div>
         
-        <div style="padding: 0 24px 16px;">
-            <div style="display:flex; background:var(--md-sys-color-surface-container-low); padding:4px; border-radius:100px; border:1px solid var(--md-sys-color-outline-variant);">
-                <div id="s-pick" class="ship-opt" onclick="CORE.setShip('Pick-up', 0)">Pick-up</div>
-                <div id="s-std" class="ship-opt active" onclick="CORE.setShip('PAXI Standard', 60)">Std</div>
-                <div id="s-exp" class="ship-opt" onclick="CORE.setShip('PAXI Express', 100)">Exp</div>
-            </div>
+        <div style="padding: 0 24px 8px;"><div style="display:flex; background:var(--md-sys-color-surface-container-low); padding:4px; border-radius:100px; border:1px solid var(--md-sys-color-outline-variant);">
+            <div id="s-pick" class="ship-opt" onclick="CORE.setShip('Pick-up', 0)">Pick-up</div>
+            <div id="s-std" class="ship-opt active" onclick="CORE.setShip('PAXI Standard', 60)">Std</div>
+            <div id="s-exp" class="ship-opt" onclick="CORE.setShip('PAXI Express', 100)">Exp</div>
+        </div></div>
+
+        <div class="info-box" id="ship-info">
+            <span class="material-symbols-rounded" style="color:var(--md-sys-color-primary); font-size:20px;">info</span>
+            <span id="info-text">Standard: 7-9 business days to your nearest Pep/Paxi point.</span>
         </div>
 
         <div id="bag-items" style="flex:1; overflow-y:auto; padding:0 24px;"></div>
         
         <div style="padding:24px; background:var(--md-sys-color-surface-container-high); border-radius:32px 32px 0 0;">
             <div style="display:flex; justify-content:space-between; margin-bottom:16px; font-size:20px; font-weight:700;">
-                <span>Total</span>
-                <span id="bag-total">R 0.00</span>
+                <span>Total</span><span id="bag-total">R 0.00</span>
             </div>
-            <button class="btn-m3" style="width:100%; height:64px; background:var(--md-sys-color-primary); color:white; font-size:18px;" onclick="CORE.checkout()">Order on WhatsApp</button>
+            <button class="btn-m3" style="width:100%; height:64px; background:var(--md-sys-color-primary); color:white;" onclick="CORE.checkout()">Order on WhatsApp</button>
         </div>
     </div>
 
     <div id="review-sheet" class="sheet">
         <div style="padding: 24px; display:flex; justify-content:space-between;">
-            <h2 style="font-weight:700;">Leave a Review</h2>
+            <h2 style="font-weight:700;">Feedback</h2>
             <button onclick="UI.closeAll()" style="background:none; border:none;"><span class="material-symbols-rounded">close</span></button>
         </div>
         <div style="padding:0 24px 40px;">
-            <textarea id="rev-txt" style="width:100%; border-radius:20px; padding:16px; border:1px solid var(--md-sys-color-outline-variant); font-family:inherit;" rows="5" placeholder="Share your experience..."></textarea>
+            <textarea id="rev-txt" style="width:100%; border-radius:20px; padding:16px; border:1px solid #ccc; font-family:inherit;" rows="5" placeholder="Share your experience..."></textarea>
             <button class="btn-m3" style="width:100%; height:56px; margin-top:16px; background:var(--md-sys-color-primary); color:white;" onclick="UI.done()">Send Review</button>
         </div>
     </div>
 
     <button class="btn-m3" style="position:fixed; bottom:24px; left:50%; transform:translateX(-50%); width:92%; height:64px; background:var(--md-sys-color-primary); color:white; z-index:1001; box-shadow: 0 8px 24px rgba(103, 80, 164, 0.3);" onclick="UI.toggle('bag', true)">
-        <span class="material-symbols-rounded">shopping_bag</span> View Bag <div id="badge" style="display:none; background:white; color:var(--md-sys-color-primary); min-width:22px; height:22px; border-radius:11px; font-size:12px; margin-left:8px; align-items:center; justify-content:center; font-weight:700;">0</div>
+        View Bag <div id="badge" style="display:none; background:white; color:var(--md-sys-color-primary); min-width:22px; height:22px; border-radius:11px; font-size:12px; margin-left:8px; align-items:center; justify-content:center; font-weight:700;">0</div>
     </button>
 
     <script>
@@ -121,6 +119,11 @@
                 const b = document.getElementById('badge');
                 b.innerText = this.cart.length; b.style.display = this.cart.length ? 'flex' : 'none';
                 
+                const info = document.getElementById('info-text');
+                if(this.ship === 'Pick-up') info.innerText = "Collect for free at our workshop. Address provided via WhatsApp.";
+                else if(this.ship === 'PAXI Standard') info.innerText = "Standard: 7-9 business days to your nearest Pep/Paxi point.";
+                else info.innerText = "Express: 3-5 business days to your nearest Pep/Paxi point.";
+
                 ['s-pick', 's-std', 's-exp'].forEach(id => document.getElementById(id).classList.remove('active'));
                 const activeId = this.ship === 'Pick-up' ? 's-pick' : (this.ship === 'PAXI Standard' ? 's-std' : 's-exp');
                 document.getElementById(activeId).classList.add('active');
@@ -151,17 +154,14 @@
                 document.getElementById('scrim').classList.toggle('active', s); 
             },
             closeAll() { document.querySelectorAll('.active').forEach(e => e.classList.remove('active')); document.getElementById('scrim').classList.remove('active'); },
-            done() {
-                alert("Review submitted! Thank you.");
-                this.closeAll();
-            }
+            done() { alert("Review sent!"); this.closeAll(); }
         };
 
         function init() {
             const grid = document.getElementById('main-grid');
             for(let i=1; i<=28; i++) {
                 const is26 = i === 26;
-                grid.innerHTML += `<div class="card" style="${is26 ? 'opacity:0.6;' : ''}">
+                grid.innerHTML += `<div class="card" style="${is26 ? 'opacity:0.5; filter:grayscale(1);' : ''}">
                     <img src="${i}.jpg" onerror="this.src='Logo.jpg'">
                     <div style="font-weight:700; margin:10px 0;">Design #${i}</div>
                     <button class="btn-m3" style="width:100%; height:44px; background:${is26?'#ccc':'var(--md-sys-color-primary)'}; color:white;" onclick="CORE.add(${i})" ${is26?'disabled':''}>${is26?'Coming Soon':'Add'}</button>
