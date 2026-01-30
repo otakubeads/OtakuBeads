@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Otaku Beads | M3 Expressive</title>
+    <title>Otaku Beads | Handshake Ready</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet">
@@ -11,26 +11,20 @@
         :root {
             --md-sys-color-primary: #6750A4;
             --md-sys-color-surface: #FEF7FF;
-            --md-sys-color-outline: #79747E;
             --md-sys-color-container: #F3EDF7;
             --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Google Sans', sans-serif; background: var(--md-sys-color-surface); color: #1D1B20; line-height: 1.5; }
+        body { font-family: 'Google Sans', sans-serif; background: var(--md-sys-color-surface); color: #1D1B20; }
 
-        /* HEADER & NAVIGATION */
-        header { padding: 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; background: rgba(254,247,255,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .logo-box { height: 40px; display: flex; align-items: center; gap: 12px; }
-        .logo-box img { height: 100%; border-radius: 8px; }
-
-        /* GRID SYSTEM */
-        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 16px; padding-bottom: 120px; }
-        .m3-card { background: var(--md-sys-color-container); border-radius: 28px; padding: 12px; transition: transform 0.2s var(--spring); border: 1px solid transparent; }
-        .m3-card img { width: 100%; aspect-ratio: 1; border-radius: 20px; object-fit: cover; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        /* M3 EXPRESSIVE UI SECTIONS */
+        header { padding: 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; background: rgba(254,247,255,0.9); backdrop-filter: blur(12px); }
+        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px; padding-bottom: 100px; }
+        .m3-card { background: var(--md-sys-color-container); border-radius: 28px; padding: 12px; transition: 0.2s var(--spring); }
+        .m3-card img { width: 100%; aspect-ratio: 1; border-radius: 20px; object-fit: cover; margin-bottom: 12px; }
         
-        /* UI COMPONENTS */
-        .btn-m3 { border: none; font-weight: 700; background: var(--md-sys-color-primary); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s var(--spring); height: 48px; border-radius: 16px; width: 100%; font-size: 14px; }
-        .btn-m3:active { transform: scale(0.95); opacity: 0.9; }
+        /* HANDSHAKE COMPONENTS */
+        .btn-m3 { border: none; font-weight: 700; background: var(--md-sys-color-primary); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s var(--spring); height: 48px; border-radius: 16px; width: 100%; }
         .sheet { position: fixed; inset: 0; z-index: 9999; transform: translateY(100%); background: var(--md-sys-color-surface); transition: 0.5s var(--spring); border-radius: 32px 32px 0 0; }
         #scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9000; display: none; backdrop-filter: blur(6px); }
     </style>
@@ -40,57 +34,60 @@
 
     <header>
         <button class="btn-m3" style="width:48px; background:#ECE6F0; color:black;" onclick="BRAIN.UI.toggle('menu', true)"><span class="material-symbols-rounded">menu</span></button>
-        <div class="logo-box"><img src="Logo.jpg" alt="Logo"><b>Otaku Beads</b></div>
-        <button class="btn-m3" style="width:48px; background:none; color:black;" id="auth-btn" onclick="BRAIN.UI.toggle('auth', true)"><span class="material-symbols-rounded" style="font-size:32px;">account_circle</span></button>
+        <div style="display:flex; align-items:center; gap:8px;"><img src="Logo.jpg" style="height:32px; border-radius:6px;"><b>Otaku Beads</b></div>
+        <div id="handshake-status" onclick="BRAIN.UI.toggle('auth', true)" style="cursor:pointer; width:44px; height:44px; display:flex; align-items:center; justify-content:center;">
+            <span class="material-symbols-rounded" style="font-size:32px;">account_circle</span>
+        </div>
     </header>
 
     <main class="product-grid" id="main-grid"></main>
 
     <div id="paxi-sheet" class="sheet">
         <div style="padding: 24px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-                <h2>Checkout</h2>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2>Paxi Delivery</h2>
                 <button onclick="BRAIN.UI.toggle('paxi', false)" style="background:none; border:none;"><span class="material-symbols-rounded">close</span></button>
             </div>
-            <p style="font-weight:700; margin-bottom:12px;">Paxi Delivery Option:</p>
-            <button class="btn-m3" style="margin-bottom:12px;" onclick="alert('Standard Selected')">Standard (R60)</button>
-            <button class="btn-m3" style="background:#ECE6F0; color:black;" onclick="alert('Express Selected')">Express (R100)</button>
+            <div id="handshake-promo" style="display:none; padding:12px; background:#EADDFF; border-radius:12px; margin-bottom:16px; font-weight:700;">✨ 10% Handshake Discount Active</div>
+            <button class="btn-m3" style="margin-bottom:12px;" onclick="alert('Standard R60')">Standard Delivery</button>
+            <button class="btn-m3" style="background:#ECE6F0; color:black;" onclick="alert('Express R100')">Express Delivery</button>
         </div>
     </div>
 
     <div id="auth-sheet" class="sheet">
         <div style="padding: 32px; text-align: center;">
-            <h2 style="margin-bottom:24px;">Welcome</h2>
-            <div id="g_id_onload" data-client_id="919544111369-2hhnhfnsc0hvrgnq1dn8fjc8ca3im7jv.apps.googleusercontent.com" data-callback="handleCredentialResponse"></div>
+            <h2 style="margin-bottom:24px;">Connect with Google</h2>
+            <div id="g_id_onload" data-client_id="919544111369-2hhnhfnsc0hvrgnq1dn8fjc8ca3im7jv.apps.googleusercontent.com" data-callback="onHandshakeComplete"></div>
             <div class="g_id_signin" data-type="standard"></div>
-            <div style="margin: 20px 0; color: var(--md-sys-color-outline);">OR</div>
-            <button class="btn-m3" style="background:#ECE6F0; color:black;" onclick="BRAIN.ENGINE.asGuest()">Continue as Guest</button>
+            <div style="margin: 20px 0; color: #79747E;">OR</div>
+            <button class="btn-m3" style="background:#ECE6F0; color:black;" onclick="BRAIN.ENGINE.setGuest()">Continue as Guest</button>
         </div>
     </div>
 
     <script>
         const BRAIN = {
             ENGINE: {
-                user: JSON.parse(localStorage.getItem('ob_user')) || null,
-                asGuest() { localStorage.setItem('ob_guest', 'true'); location.reload(); }
+                user: JSON.parse(localStorage.getItem('handshake_user')) || null,
+                setGuest() { localStorage.setItem('is_guest', 'true'); location.reload(); }
             },
             UI: {
                 toggle(id, s) {
                     document.getElementById(id + '-sheet').style.transform = s ? 'translateY(0)' : 'translateY(100%)';
                     document.getElementById('scrim').style.display = s ? 'block' : 'none';
                 },
-                closeAll() { this.toggle('paxi', 0); this.toggle('auth', 0); },
+                closeAll() { this.toggle('auth', 0); this.toggle('paxi', 0); },
                 render() {
+                    if (BRAIN.ENGINE.user) {
+                        document.getElementById('handshake-status').innerHTML = `<img src="${BRAIN.ENGINE.user.picture}" style="width:36px; height:36px; border-radius:50%;">`;
+                        document.getElementById('handshake-promo').style.display = 'block';
+                    }
                     const grid = document.getElementById('main-grid');
                     for(let i=1; i<=28; i++) {
                         const is26 = i === 26;
                         grid.innerHTML += `
-                        <div class="m3-card ${is26 ? 'coming-soon' : ''}">
-                            <img src="${i}.jpg" onerror="this.src='Logo.jpg'">
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                                <b>#${i}</b>
-                                <span class="material-symbols-rounded" style="color:#FFB400; font-size:18px;">star</span>
-                            </div>
+                        <div class="m3-card">
+                            <img src="${is26 ? 'Logo.jpg' : i + '.jpg'}" onerror="this.src='Logo.jpg'">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:10px;"><b>#${i}</b><span class="material-symbols-rounded" style="color:#FFB400;">star</span></div>
                             <button class="btn-m3" style="${is26 ? 'background:#ccc' : ''}" onclick="${is26 ? '' : 'BRAIN.UI.toggle(\'paxi\', true)'}">
                                 ${is26 ? 'Coming Soon' : 'Add to Bag'}
                             </button>
@@ -100,9 +97,10 @@
             }
         };
 
-        function handleCredentialResponse(r) {
+        function onHandshakeComplete(r) {
             const p = JSON.parse(atob(r.credential.split('.')[1]));
-            localStorage.setItem('ob_user', JSON.stringify(p));
+            localStorage.setItem('handshake_user', JSON.stringify(p));
+            localStorage.setItem('is_guest', 'false');
             location.reload();
         }
 
