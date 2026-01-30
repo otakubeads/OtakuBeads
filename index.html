@@ -11,59 +11,89 @@
         :root {
             --md-sys-color-primary: #6750A4;
             --md-sys-color-surface: #FEF7FF;
-            --md-sys-color-surface-container-low: #F7F2FA;
-            --md-sys-color-surface-container-high: #ECE6F0;
-            --md-sys-color-surface-container-highest: #E6E0E9;
+            --md-sys-color-surface-container: #F3EDF7;
             --md-sys-color-secondary-container: #E8DEF8;
-            --md-sys-color-on-secondary-container: #1D192B;
-            --md-sys-color-outline-variant: #CAC4D0;
-            --spring: cubic-bezier(0.2, 0, 0, 1);
+            --spring-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --spring-smooth: cubic-bezier(0.2, 0, 0, 1);
         }
     </style>
     
     <style>
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Google Sans', sans-serif; background: var(--md-sys-color-surface); color: #1D1B20; overflow-x: hidden; }
-        .header { padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--md-sys-color-surface); z-index: 1000; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; padding: 16px; padding-bottom: 120px; }
-        .card { background: var(--md-sys-color-surface-container-low); border-radius: 28px; padding: 12px; border: 1px solid var(--md-sys-color-outline-variant); text-align: center; transition: 0.2s; }
-        .card img { width: 100%; aspect-ratio: 1/1; border-radius: 22px; object-fit: cover; }
         
-        #scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 4500; opacity: 0; pointer-events: none; backdrop-filter: blur(4px); transition: opacity 0.3s; }
+        /* ALIVE ANIMATIONS */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes badgePulse {
+            0% { scale: 1; }
+            50% { scale: 1.2; }
+            100% { scale: 1; }
+        }
+
+        /* HEADER */
+        .header { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--md-sys-color-surface); z-index: 1000; }
+        
+        .icon-btn {
+            width: 48px; height: 48px; border-radius: 16px;
+            background: var(--md-sys-color-surface-container); border: none;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.4s var(--spring-bounce); color: var(--md-sys-color-primary);
+        }
+        .icon-btn:active { scale: 0.8; border-radius: 24px; }
+
+        /* PRODUCT GRID */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; padding: 16px; padding-bottom: 140px; }
+        .card { 
+            background: var(--md-sys-color-surface-container); border-radius: 28px; padding: 12px; 
+            text-align: center; opacity: 0; animation: slideUp 0.6s var(--spring-bounce) forwards;
+        }
+        .card img { width: 100%; aspect-ratio: 1/1; border-radius: 22px; object-fit: cover; transition: transform 0.5s var(--spring-bounce); }
+        .card:active img { transform: scale(0.95); }
+
+        /* M3 EXPRESSIVE BUTTONS */
+        .btn-m3 { 
+            border-radius: 20px; border: none; font-weight: 700; cursor: pointer;
+            transition: all 0.4s var(--spring-bounce); display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-m3:active { scale: 0.92; border-radius: 28px; }
+
+        /* OVERLAYS */
+        #scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 4500; opacity: 0; pointer-events: none; backdrop-filter: blur(4px); transition: opacity 0.4s; }
         #scrim.active { opacity: 1; pointer-events: auto; }
         
-        .drawer { position: fixed; top: 0; left: 0; width: 320px; height: 100%; background: var(--md-sys-color-surface-container-low); z-index: 6000; transform: translateX(-100%); transition: transform 0.4s var(--spring); padding: 24px; border-radius: 0 28px 28px 0; }
+        .drawer { position: fixed; top: 0; left: 0; width: 312px; height: 100%; background: var(--md-sys-color-surface); z-index: 6000; transform: translateX(-100%); transition: transform 0.5s var(--spring-smooth); padding: 24px; border-radius: 0 28px 28px 0; }
         .drawer.active { transform: translateX(0); }
         
-        .sheet { position: fixed; inset: 0; z-index: 5000; transform: translateY(115%); background: var(--md-sys-color-surface-container-highest); border-radius: 32px 32px 0 0; transition: transform 0.4s var(--spring); display: flex; flex-direction: column; }
+        .sheet { position: fixed; inset: 0; z-index: 5000; transform: translateY(100%); background: var(--md-sys-color-surface-container); border-radius: 32px 32px 0 0; transition: transform 0.5s var(--spring-smooth); display: flex; flex-direction: column; }
         .sheet.active { transform: translateY(0); }
 
-        .btn-m3 { border-radius: 24px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 16px; border-radius: 16px; margin-bottom: 8px; cursor: pointer; color: #1D1B20; text-decoration: none; font-weight: 500; background: white; }
-        
-        .ship-opt { flex: 1; text-align: center; padding: 12px; border-radius: 100px; cursor: pointer; font-size: 11px; font-weight: 700; }
-        .ship-opt.active { background: var(--md-sys-color-primary); color: white; }
-        
-        .info-box { margin: 0 24px 16px; padding: 12px 16px; background: white; border-radius: 16px; font-size: 13px; border: 1px dashed var(--md-sys-color-outline-variant); display: flex; gap: 10px; align-items: flex-start; }
+        .nav-item { 
+            display: flex; align-items: center; gap: 16px; padding: 16px; border-radius: 100px; 
+            margin-bottom: 4px; cursor: pointer; font-weight: 500; transition: 0.3s;
+        }
+        .nav-item:active { background: var(--md-sys-color-secondary-container); transform: translateX(8px); }
+
+        .badge-anim { animation: badgePulse 0.4s var(--spring-bounce); }
     </style>
 </head>
 <body>
-    <div id="scrim" onclick="UI.closeAll()"></div>
+    <div id="scrim" onclick="UI.handleScrimClick()"></div>
 
     <header class="header">
-        <button style="background:none; border:none;" onclick="UI.toggle('menu', true)"><span class="material-symbols-rounded" style="font-size:32px;">menu</span></button>
+        <button class="icon-btn" onclick="UI.toggle('menu', true)"><span class="material-symbols-rounded">menu</span></button>
         <img src="Logo.jpg" style="width:44px; height:44px; border-radius:12px;" onerror="this.src='https://placehold.co/44'">
-        <div style="width:32px;"></div>
+        <button class="icon-btn" onclick="UI.toggle('review', true)"><span class="material-symbols-rounded">grade</span></button>
     </header>
 
     <nav id="menu-drawer" class="drawer">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:32px;">
-            <h2 style="font-weight:700;">Otaku Beads</h2>
-            <button onclick="UI.closeAll()" style="background:none; border:none;"><span class="material-symbols-rounded">close</span></button>
-        </div>
-        <a href="https://wa.me/27XXXXXXXXX" class="nav-item"><span class="material-symbols-rounded">chat</span> WhatsApp Us</a>
-        <a href="https://www.paxi.co.za/tracking" target="_blank" class="nav-item"><span class="material-symbols-rounded">location_on</span> Track PAXI</a>
-        <div class="nav-item" onclick="UI.toggle('review', true)" style="background:var(--md-sys-color-secondary-container);"><span class="material-symbols-rounded">grade</span> Write a Review</div>
+        <h2 style="margin-bottom:32px; font-weight:700; color:var(--md-sys-color-primary);">Otaku Beads</h2>
+        <div class="nav-item" onclick="location.href='https://wa.me/27XXXXXXXXX'"><span class="material-symbols-rounded">chat</span> WhatsApp</div>
+        <div class="nav-item" onclick="window.open('https://www.paxi.co.za/tracking')"><span class="material-symbols-rounded">local_shipping</span> Track Order</div>
+        <div class="nav-item" style="margin-top:20px; background:var(--md-sys-color-secondary-container);" onclick="UI.toggle('menu', false)"><span class="material-symbols-rounded">close</span> Close Menu</div>
     </nav>
 
     <main class="grid" id="main-grid"></main>
@@ -71,100 +101,73 @@
     <div id="bag-sheet" class="sheet">
         <div style="padding: 24px; display:flex; justify-content:space-between; align-items:center;">
             <h2 style="font-weight:700;">Your Bag</h2>
-            <button onclick="UI.closeAll()" style="background:var(--md-sys-color-surface-container-high); border:none; width:40px; height:40px; border-radius:20px;"><span class="material-symbols-rounded">close</span></button>
+            <button onclick="UI.toggle('bag', false)" class="icon-btn"><span class="material-symbols-rounded">close</span></button>
         </div>
-        
-        <div style="padding: 0 24px 8px;"><div style="display:flex; background:var(--md-sys-color-surface-container-low); padding:4px; border-radius:100px; border:1px solid var(--md-sys-color-outline-variant);">
-            <div id="s-pick" class="ship-opt" onclick="CORE.setShip('Pick-up', 0)">Pick-up</div>
-            <div id="s-std" class="ship-opt active" onclick="CORE.setShip('PAXI Standard', 60)">Std</div>
-            <div id="s-exp" class="ship-opt" onclick="CORE.setShip('PAXI Express', 100)">Exp</div>
-        </div></div>
-
-        <div class="info-box" id="ship-info">
-            <span class="material-symbols-rounded" style="color:var(--md-sys-color-primary); font-size:20px;">info</span>
-            <span id="info-text">Standard: 7-9 business days to your nearest Pep/Paxi point.</span>
-        </div>
-
         <div id="bag-items" style="flex:1; overflow-y:auto; padding:0 24px;"></div>
-        
-        <div style="padding:24px; background:var(--md-sys-color-surface-container-high); border-radius:32px 32px 0 0;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:16px; font-size:20px; font-weight:700;">
-                <span>Total</span><span id="bag-total">R 0.00</span>
-            </div>
-            <button class="btn-m3" style="width:100%; height:64px; background:var(--md-sys-color-primary); color:white;" onclick="CORE.checkout()">Order on WhatsApp</button>
+        <div style="padding:24px; background:white; border-radius:32px 32px 0 0;">
+            <button class="btn-m3" style="width:100%; height:64px; background:var(--md-sys-color-primary); color:white; font-size:18px;" onclick="CORE.checkout()">Confirm Order</button>
         </div>
     </div>
 
     <div id="review-sheet" class="sheet">
         <div style="padding: 24px; display:flex; justify-content:space-between;">
-            <h2 style="font-weight:700;">Feedback</h2>
-            <button onclick="UI.closeAll()" style="background:none; border:none;"><span class="material-symbols-rounded">close</span></button>
+            <h2 style="font-weight:700;">Review</h2>
+            <button onclick="UI.toggle('review', false)" class="icon-btn"><span class="material-symbols-rounded">close</span></button>
         </div>
         <div style="padding:0 24px 40px;">
-            <textarea id="rev-txt" style="width:100%; border-radius:20px; padding:16px; border:1px solid #ccc; font-family:inherit;" rows="5" placeholder="Share your experience..."></textarea>
-            <button class="btn-m3" style="width:100%; height:56px; margin-top:16px; background:var(--md-sys-color-primary); color:white;" onclick="UI.done()">Send Review</button>
+            <textarea id="rev-txt" style="width:100%; border-radius:24px; padding:20px; border:none; background:white; font-family:inherit;" rows="5" placeholder="Tell us what you think!"></textarea>
+            <button class="btn-m3" style="width:100%; height:60px; margin-top:20px; background:var(--md-sys-color-primary); color:white;" onclick="UI.done()">Submit</button>
         </div>
     </div>
 
-    <button class="btn-m3" style="position:fixed; bottom:24px; left:50%; transform:translateX(-50%); width:92%; height:64px; background:var(--md-sys-color-primary); color:white; z-index:1001; box-shadow: 0 8px 24px rgba(103, 80, 164, 0.3);" onclick="UI.toggle('bag', true)">
-        View Bag <div id="badge" style="display:none; background:white; color:var(--md-sys-color-primary); min-width:22px; height:22px; border-radius:11px; font-size:12px; margin-left:8px; align-items:center; justify-content:center; font-weight:700;">0</div>
+    <button class="btn-m3" style="position:fixed; bottom:24px; left:50%; transform:translateX(-50%); width:92%; height:72px; background:var(--md-sys-color-primary); color:white; z-index:1001; box-shadow: 0 12px 32px rgba(103, 80, 164, 0.4);" onclick="UI.toggle('bag', true)">
+        <span class="material-symbols-rounded">shopping_cart</span> View Bag 
+        <div id="badge" style="display:none; background:white; color:var(--md-sys-color-primary); min-width:24px; height:24px; border-radius:12px; font-size:13px; margin-left:12px; align-items:center; justify-content:center; font-weight:700;">0</div>
     </button>
 
     <script>
         const CORE = {
-            cart: [], ship: 'PAXI Standard', cost: 60,
-            add(id) { this.cart.push(id); this.upd(); },
-            setShip(t, c) { this.ship = t; this.cost = c; this.upd(); },
+            cart: [],
+            add(id) { 
+                this.cart.push(id); 
+                const b = document.getElementById('badge');
+                b.classList.remove('badge-anim');
+                void b.offsetWidth; // Trigger reflow
+                b.classList.add('badge-anim');
+                this.upd(); 
+            },
             upd() {
                 const b = document.getElementById('badge');
                 b.innerText = this.cart.length; b.style.display = this.cart.length ? 'flex' : 'none';
-                
-                const info = document.getElementById('info-text');
-                if(this.ship === 'Pick-up') info.innerText = "Collect for free at our workshop. Address provided via WhatsApp.";
-                else if(this.ship === 'PAXI Standard') info.innerText = "Standard: 7-9 business days to your nearest Pep/Paxi point.";
-                else info.innerText = "Express: 3-5 business days to your nearest Pep/Paxi point.";
-
-                ['s-pick', 's-std', 's-exp'].forEach(id => document.getElementById(id).classList.remove('active'));
-                const activeId = this.ship === 'Pick-up' ? 's-pick' : (this.ship === 'PAXI Standard' ? 's-std' : 's-exp');
-                document.getElementById(activeId).classList.add('active');
-
-                let total = this.cart.length ? (this.cart.length * 45) + this.cost : 0;
-                document.getElementById('bag-total').innerText = `R ${total}.00`;
                 this.render();
             },
             render() {
                 const list = document.getElementById('bag-items');
-                if(!this.cart.length) { list.innerHTML = '<p style="text-align:center; padding:40px; opacity:0.5;">Bag is empty</p>'; return; }
-                list.innerHTML = this.cart.map((id, i) => `
-                    <div style="background:white; padding:12px; border-radius:16px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                        <span>Design #${id}</span>
-                        <button onclick="CORE.cart.splice(${i},1);CORE.upd()" style="background:none; border:none; color:red;"><span class="material-symbols-rounded">delete</span></button>
-                    </div>`).join('');
+                list.innerHTML = this.cart.map((id, i) => `<div style="background:white; padding:16px; border-radius:20px; margin-bottom:12px; display:flex; justify-content:space-between;"><span>Design #${id}</span><span onclick="CORE.cart.splice(${i},1);CORE.upd()" style="color:red">Remove</span></div>`).join('');
             },
-            checkout() {
-                if(!this.cart.length) return;
-                const msg = encodeURIComponent(`*NEW ORDER*\nItems: ${this.cart.join(', ')}\nDelivery: ${this.ship}\nTotal: ${document.getElementById('bag-total').innerText}`);
-                window.open(`https://wa.me/27XXXXXXXXX?text=${msg}`);
-            }
+            checkout() { window.open(`https://wa.me/27XXXXXXXXX?text=Order:${this.cart.join(',')}`); }
         };
 
         const UI = {
-            toggle(id, s) { 
-                document.getElementById(id + (id==='menu'?'-drawer':'-sheet')).classList.toggle('active', s); 
-                document.getElementById('scrim').classList.toggle('active', s); 
+            toggle(id, s) {
+                document.getElementById(id + (id==='menu'?'-drawer':'-sheet')).classList.toggle('active', s);
+                document.getElementById('scrim').classList.toggle('active', s);
             },
-            closeAll() { document.querySelectorAll('.active').forEach(e => e.classList.remove('active')); document.getElementById('scrim').classList.remove('active'); },
-            done() { alert("Review sent!"); this.closeAll(); }
+            handleScrimClick() {
+                document.querySelectorAll('.active').forEach(el => el.classList.remove('active'));
+            },
+            done() { alert("Thanks!"); this.toggle('review', false); }
         };
 
         function init() {
             const grid = document.getElementById('main-grid');
             for(let i=1; i<=28; i++) {
                 const is26 = i === 26;
-                grid.innerHTML += `<div class="card" style="${is26 ? 'opacity:0.5; filter:grayscale(1);' : ''}">
+                const delay = i * 0.05;
+                grid.innerHTML += `<div class="card" style="animation-delay: ${delay}s; ${is26 ? 'opacity:0.4; filter:grayscale(1);' : ''}">
                     <img src="${i}.jpg" onerror="this.src='Logo.jpg'">
-                    <div style="font-weight:700; margin:10px 0;">Design #${i}</div>
-                    <button class="btn-m3" style="width:100%; height:44px; background:${is26?'#ccc':'var(--md-sys-color-primary)'}; color:white;" onclick="CORE.add(${i})" ${is26?'disabled':''}>${is26?'Coming Soon':'Add'}</button>
+                    <div style="font-weight:700; margin:12px 0;">Design #${i}</div>
+                    <button class="btn-m3" style="width:100%; height:48px; background:${is26?'#ccc':'var(--md-sys-color-primary)'}; color:white;" onclick="CORE.add(${i})" ${is26?'disabled':''}>${is26?'Soon':'Add'}</button>
                 </div>`;
             }
         }
