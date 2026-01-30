@@ -5,88 +5,168 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Otaku Beads</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet">
     <style>
-        :root { --p: #6750A4; --s: #FEF7FF; --c: #F3EDF7; --bez: cubic-bezier(0.3, 0, 0, 1); }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Google Sans', sans-serif; background: var(--s); color: #1D1B20; -webkit-font-smoothing: antialiased; }
-        
-        header { padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; background: rgba(254,247,255,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px; padding-bottom: 120px; }
-        .card { background: var(--c); border-radius: 28px; padding: 12px; transition: transform 0.2s var(--bez); }
-        .card img { width: 100%; aspect-ratio: 1; border-radius: 20px; object-fit: cover; background: #fff; }
-        
-        .btn-fill { background: var(--p); color: white; border: none; height: 52px; border-radius: 16px; font-weight: 700; width: 100%; cursor: pointer; }
-        .btn-fill:disabled { background: #e0e0e0; color: #9e9e9e; cursor: not-allowed; }
-        
-        .sheet { position: fixed; inset: 0; z-index: 9999; transform: translateY(100%); background: var(--s); transition: 0.5s var(--bez); border-radius: 32px 32px 0 0; padding: 24px; box-shadow: 0 -10px 40px rgba(0,0,0,0.1); }
-        #scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9000; display: none; backdrop-filter: blur(8px); }
+        :root { 
+            --p: #B3261E; /* Gmail Red for FAB */
+            --s: #F7F2FA; /* M3 Surface */
+            --c: #FFFFFF; /* Card Surface */
+            --on-s: #1D1B20;
+            --bez: cubic-bezier(0.2, 0, 0, 1);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+        body { font-family: 'Google Sans', sans-serif; background: var(--s); color: var(--on-s); overflow-x: hidden; }
+
+        /* SECTION #UI: GMAIL-STYLE SEARCH HEADER */
+        header { 
+            margin: 8px 16px; 
+            padding: 4px 8px;
+            height: 56px;
+            background: #EEE8F4; 
+            border-radius: 28px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            position: sticky; 
+            top: 8px; 
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .header-left { display: flex; align-items: center; gap: 12px; padding-left: 8px; }
+        .logo-img { height: 32px; width: 32px; border-radius: 8px; object-fit: cover; }
+        .profile-btn { width: 32px; height: 32px; border-radius: 50%; overflow: hidden; cursor: pointer; border: none; background: #EADDFF; margin-right: 4px; }
+        .profile-btn img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* SECTION #UI: PRODUCT FEED */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px; padding-bottom: 120px; }
+        .card { background: var(--c); border-radius: 24px; padding: 8px; transition: 0.2s var(--bez); border: 1px solid #E7E0EC; }
+        .card img { width: 100%; aspect-ratio: 1; border-radius: 18px; object-fit: cover; margin-bottom: 8px; }
+        .card-info { padding: 4px 8px; display: flex; justify-content: space-between; align-items: center; }
+
+        /* M3 BUTTONS */
+        .btn-add { background: #EADDFF; color: #21005D; border: none; height: 40px; border-radius: 20px; font-weight: 500; width: 100%; margin-top: 8px; cursor: pointer; }
+        .btn-add:disabled { background: #e0e0e0; color: #9e9e9e; cursor: not-allowed; }
+
+        /* SECTION #UI: COMPOSE-STYLE FAB */
+        .fab-extended { 
+            position: fixed; bottom: 24px; right: 16px; 
+            background: var(--p); color: white; 
+            height: 56px; padding: 0 24px; border-radius: 16px;
+            display: flex; align-items: center; gap: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
+            border: none; font-family: 'Google Sans', sans-serif; font-weight: 500; font-size: 16px;
+            z-index: 2000; cursor: pointer;
+            transition: 0.3s var(--bez);
+        }
+        .fab-extended:active { transform: scale(0.95); }
+
+        /* SECTION #UI: ACCOUNT SWITCHER (BOTTOM SHEET) */
+        .sheet { 
+            position: fixed; inset: 0; z-index: 9999; 
+            transform: translateY(100%); background: var(--s); 
+            transition: 0.5s var(--bez); border-radius: 28px 28px 0 0; 
+            padding: 24px; text-align: center;
+        }
+        .sheet-handle { width: 32px; height: 4px; background: #79747E; border-radius: 2px; margin: 0 auto 24px; }
+        .sheet-avatar-large { width: 80px; height: 80px; border-radius: 50%; margin-bottom: 16px; border: 1px solid #E7E0EC; }
+        .pill-btn { background: white; border: 1px solid #79747E; padding: 10px 24px; border-radius: 20px; font-weight: 500; margin: 16px 0; display: inline-block; cursor: pointer; }
+        #scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9000; display: none; backdrop-filter: blur(4px); }
     </style>
 </head>
 <body>
     <div id="scrim" onclick="CORE.UI.close()"></div>
     
     <header>
-        <button onclick="CORE.UI.open('menu')" style="background:none; border:none; cursor:pointer;"><span class="material-symbols-rounded">menu</span></button>
-        <div style="display:flex; align-items:center; gap:8px;"><img src="Logo.jpg" style="height:32px; border-radius:6px;"><b>Otaku Beads</b></div>
-        <div id="user-display" onclick="CORE.UI.open('auth')" style="cursor:pointer;"><span class="material-symbols-rounded" style="font-size:32px; color:var(--p);">account_circle</span></div>
+        <div class="header-left">
+            <span class="material-symbols-rounded">menu</span>
+            <span style="color: #49454F; font-size: 18px;">Search beads</span>
+        </div>
+        <button class="profile-btn" onclick="CORE.UI.open('auth')">
+            <img id="header-avatar" src="Logo.jpg">
+        </button>
     </header>
 
     <main class="grid" id="main-grid"></main>
 
+    <button class="fab-extended" onclick="CORE.UI.open('paxi')">
+        <span class="material-symbols-rounded">shopping_bag</span>
+        Checkout
+    </button>
+
     <div id="paxi-sheet" class="sheet">
-        <h2 style="margin-bottom:12px;">Checkout</h2>
-        <div id="promo-offer" style="display:none; color:var(--p); font-weight:700; margin-bottom:10px; background:#EADDFF; padding:8px; border-radius:12px; text-align:center;">BUY 2 GET 1 FREE APPLIED</div>
-        <p id="bag-status" style="margin-bottom:24px;">Items in bag: 0</p>
-        <button class="btn-fill" style="margin-bottom:12px;" onclick="alert('Standard Delivery Selected')">Standard Paxi (R60)</button>
-        <button class="btn-fill" style="background:#ECE6F0; color:black;" onclick="alert('Express Delivery Selected')">Express Paxi (R100)</button>
+        <div class="sheet-handle"></div>
+        <h2 style="margin-bottom:8px;">Checkout</h2>
+        <div id="promo-chip" style="display:none; background:#F9DEDC; color:#410002; padding:8px; border-radius:8px; margin-bottom:16px; font-weight:700;">PROMO: 3RD ITEM FREE!</div>
+        <p id="bag-status" style="margin-bottom:24px;">0 items in bag</p>
+        <button class="btn-add" style="background:var(--p); color:white; height:52px;" onclick="alert('Proceeding to Paxi...')">Standard Paxi (R60)</button>
     </div>
 
     <div id="auth-sheet" class="sheet">
-        <h2 style="text-align:center; margin-bottom:24px;">Sign In</h2>
+        <div class="sheet-handle"></div>
+        <img id="sheet-avatar" src="Logo.jpg" class="sheet-avatar-large">
+        <h3 id="user-greeting">Hi, Guest!</h3>
+        <div class="pill-btn" onclick="document.querySelector('.g_id_signin div').click()">Manage your Google Account</div>
+        <hr style="border: 0; border-top: 1px solid #E7E0EC; margin: 20px 0;">
+        <div style="display:none;" class="g_id_signin" data-type="standard"></div>
         <div id="g_id_onload" 
              data-client_id="919544111369-2hhnhfnsc0hvrgnq1dn8fjc8ca3im7jv.apps.googleusercontent.com" 
              data-callback="onSignIn">
         </div>
-        <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline"></div>
+        <p style="color:#49454F; font-size:14px; cursor:pointer;" onclick="location.reload()">Sign out of all accounts</p>
     </div>
 
     <script>
+        // SECTION #BRAIN: LOGIC & RESTORATION
         const CORE = {
             bag: [],
             LOGIC: {
                 update() {
-                    const c = CORE.bag.length;
-                    document.getElementById('bag-status').innerText = `Items in bag: ${c}`;
-                    document.getElementById('promo-offer').style.display = (c >= 3) ? 'block' : 'none';
+                    const count = CORE.bag.length;
+                    document.getElementById('bag-status').innerText = `${count} items in bag`;
+                    document.getElementById('promo-chip').style.display = (count >= 3) ? 'block' : 'none';
                 }
             },
             UI: {
-                open(id) { if(id==='paxi') CORE.LOGIC.update(); document.getElementById(id+'-sheet').style.transform='translateY(0)'; document.getElementById('scrim').style.display='block'; },
-                close() { document.querySelectorAll('.sheet').forEach(s => s.style.transform='translateY(100%)'); document.getElementById('scrim').style.display='none'; },
-                add(i) { CORE.bag.push(i); this.open('paxi'); },
+                open(id) { 
+                    if(id === 'paxi') CORE.LOGIC.update();
+                    document.getElementById(id + '-sheet').style.transform = 'translateY(0)'; 
+                    document.getElementById('scrim').style.display = 'block'; 
+                },
+                close() { 
+                    document.querySelectorAll('.sheet').forEach(s => s.style.transform = 'translateY(100%)'); 
+                    document.getElementById('scrim').style.display = 'none'; 
+                },
+                add(i) { CORE.bag.push(i); CORE.LOGIC.update(); },
                 render() {
                     const g = document.getElementById('main-grid');
                     for(let i=1; i<=28; i++) {
                         const is26 = (i === 26);
-                        g.innerHTML += `<div class="card"><img src="${is26?'Logo.jpg':i+'.jpg'}" onerror="this.src='Logo.jpg'"><div style="display:flex; justify-content:space-between; margin:10px 0;"><b>#${i}</b></div><button class="btn-fill" ${is26?'disabled':''} onclick="CORE.UI.add(${i})">${is26?'Coming Soon':'Add to Bag'}</button></div>`;
+                        g.innerHTML += `<div class="card">
+                            <img src="${is26 ? 'Logo.jpg' : i + '.jpg'}" onerror="this.src='Logo.jpg'">
+                            <div class="card-info"><b>Bead #${i}</b><span>R20</span></div>
+                            <button class="btn-add" ${is26 ? 'disabled' : ''} onclick="CORE.UI.add(${i})">
+                                ${is26 ? 'Coming Soon' : 'Add to Bag'}
+                            </button>
+                        </div>`;
                     }
                 }
             }
         };
 
-        function onSignIn(response) {
-            const user = JSON.parse(atob(response.credential.split('.')[1]));
-            localStorage.setItem('ob_auth', JSON.stringify(user));
+        function onSignIn(r) {
+            const user = JSON.parse(atob(r.credential.split('.')[1]));
+            localStorage.setItem('ob_auth_v65', JSON.stringify(user));
             location.reload();
         }
 
         window.onload = () => {
-            const auth = localStorage.getItem('ob_auth');
+            const auth = localStorage.getItem('ob_auth_v65');
             if(auth) {
                 const u = JSON.parse(auth);
-                document.getElementById('user-display').innerHTML = `<img src="${u.picture}" style="width:32px; height:32px; border-radius:50%; border: 2px solid var(--p);">`;
+                document.getElementById('header-avatar').src = u.picture;
+                document.getElementById('sheet-avatar').src = u.picture;
+                document.getElementById('user-greeting').innerText = `Hi, ${u.given_name}!`;
             }
             CORE.UI.render();
         };
