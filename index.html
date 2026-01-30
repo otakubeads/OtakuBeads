@@ -15,6 +15,7 @@
             --md-sys-color-surface-container-high: #ECE6F0;
             --md-sys-color-on-surface: #1D1B20;
             --md-sys-color-error: #B3261E;
+            --md-sys-color-success: #388E3C;
             --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; margin: 0; padding: 0; }
@@ -35,6 +36,9 @@
         .segment-row { display: flex; background: var(--md-sys-color-surface-container-high); padding: 4px; border-radius: 100px; margin: 8px 0; }
         .seg-btn { flex: 1; padding: 12px; border-radius: 100px; border: none; background: transparent; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 13px; }
         .seg-btn.active { background: var(--md-sys-color-primary); color: white; }
+
+        .promo-box { display: flex; gap: 8px; margin-top: 16px; background: white; padding: 8px; border-radius: 16px; border: 1px solid var(--md-sys-color-surface-container-high); }
+        .promo-input { flex: 1; border: none; outline: none; padding: 8px; font-family: inherit; font-weight: 700; text-transform: uppercase; }
 
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; padding: 16px; padding-bottom: 140px; }
         .card { background: var(--md-sys-color-surface-container); border-radius: 28px; padding: 12px; }
@@ -86,12 +90,22 @@
                 <button id="p-std" class="seg-btn active" onclick="BRAIN.ORDER.setPaxi('Standard', 60)">Standard (R60)</button>
                 <button id="p-exp" class="seg-btn" onclick="BRAIN.ORDER.setPaxi('Express', 100)">Express (R100)</button>
             </div>
+            
+            <div class="promo-box">
+                <input type="text" id="promo-input" class="promo-input" placeholder="Promo Code">
+                <button class="btn-m3" style="padding: 0 16px; border-radius: 12px;" onclick="BRAIN.ORDER.applyPromo()">Apply</button>
+            </div>
+            <div id="promo-msg" style="font-size: 12px; margin: 4px 8px; font-weight: 700;"></div>
+
             <div id="bag-list-inner" style="margin-top:16px;"></div>
             <button onclick="BRAIN.CART.clear()" style="width:100%; padding:16px; border:none; background:none; color:var(--md-sys-color-error); font-weight:700;">Clear All Items</button>
         </div>
         <div style="padding:24px; background:var(--md-sys-color-surface-container-high); border-radius:32px 32px 0 0;">
+            <div id="discount-row" style="display:none; justify-content:space-between; margin-bottom:4px; font-size:14px; color:var(--md-sys-color-success); font-weight:700;">
+                <span>Discount Applied:</span><span id="discount-val">-R0.00</span>
+            </div>
             <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-weight:700; font-size:18px;">
-                <span>Total:</span><span id="total-val">R0.00</span>
+                <span>Total Due:</span><span id="total-val">R0.00</span>
             </div>
             <button class="btn-m3" style="width:100%; height:64px; border-radius:20px; font-size:18px;" onclick="BRAIN.ORDER.submit()">WhatsApp Order</button>
         </div>
@@ -106,7 +120,7 @@
 
     <script>
         const BRAIN = {
-            DATA: { cart: JSON.parse(localStorage.getItem('ob_c_v8')) || {}, method: 'Paxi', ship: 60, pType: 'Standard' },
+            DATA: { cart: JSON.parse(localStorage.getItem('ob_c_v10')) || {}, method: 'Paxi', ship: 60, pType: 'Standard', discount: 0, code: '' },
             UI: {
                 toggle(id, s) {
                     const el = document.getElementById(id + (id === 'menu' ? '-drawer' : '-sheet'));
@@ -121,9 +135,15 @@
                     Object.entries(BRAIN.DATA.cart).forEach(([id, q]) => { count += q; sub += (q * 45); });
                     const badge = document.getElementById('badge');
                     badge.innerText = count; badge.style.display = count > 0 ? 'flex' : 'none';
-                    const total = sub + (BRAIN.DATA.method === 'Paxi' ? BRAIN.DATA.ship : 0);
-                    document.getElementById('total-val').innerText = `R${total}.00`;
-                    localStorage.setItem('ob_c_v8', JSON.stringify(BRAIN.DATA.cart));
+                    
+                    const discAmount = sub * BRAIN.DATA.discount;
+                    const shipping = (BRAIN.DATA.method === 'Paxi' ? BRAIN.DATA.ship : 0);
+                    const final = (sub - discAmount) + shipping;
+                    
+                    document.getElementById('discount-row').style.display = discAmount > 0 ? 'flex' : 'none';
+                    document.getElementById('discount-val').innerText = `-R${discAmount.toFixed(2)}`;
+                    document.getElementById('total-val').innerText = `R${final.toFixed(2)}`;
+                    localStorage.setItem('ob_c_v10', JSON.stringify(BRAIN.DATA.cart));
                 },
                 renderBag() {
                     const items = Object.entries(BRAIN.DATA.cart);
@@ -142,12 +162,24 @@
             },
             CART: {
                 update(id, d) { BRAIN.DATA.cart[id] = (BRAIN.DATA.cart[id] || 0) + d; if(BRAIN.DATA.cart[id] <= 0) delete BRAIN.DATA.cart[id]; BRAIN.UI.refresh(); BRAIN.UI.renderBag(); },
-                clear() { if(confirm("Clear Bag?")) { BRAIN.DATA.cart = {}; BRAIN.UI.refresh(); BRAIN.UI.toggle('bag', false); } }
+                clear() { if(confirm("Clear Bag?")) { BRAIN.DATA.cart = {}; BRAIN.DATA.discount = 0; BRAIN.UI.refresh(); BRAIN.UI.toggle('bag', false); } }
             },
             ORDER: {
                 setMethod(m) { BRAIN.DATA.method = m; document.getElementById('m-paxi').classList.toggle('active', m==='Paxi'); document.getElementById('m-pick').classList.toggle('active', m==='Pick-up'); document.getElementById('paxi-sub').style.display = m==='Paxi' ? 'flex' : 'none'; BRAIN.UI.refresh(); },
                 setPaxi(t, c) { BRAIN.DATA.pType = t; BRAIN.DATA.ship = c; document.getElementById('p-std').classList.toggle('active', t==='Standard'); document.getElementById('p-exp').classList.toggle('active', t==='Express'); BRAIN.UI.refresh(); },
-                submit() { const m = `Order: ${JSON.stringify(BRAIN.DATA.cart)}\nDelivery: ${BRAIN.DATA.method} ${BRAIN.DATA.method==='Paxi'?BRAIN.DATA.pType:''}\nTotal: ${document.getElementById('total-val').innerText}`; window.open(`https://wa.me/27663443753?text=${encodeURIComponent(m)}`); }
+                applyPromo() {
+                    const input = document.getElementById('promo-input').value.trim().toUpperCase();
+                    const msg = document.getElementById('promo-msg');
+                    if(input === 'OTAKU10') {
+                        BRAIN.DATA.discount = 0.1; BRAIN.DATA.code = input;
+                        msg.innerText = "Code Applied! 10% OFF"; msg.style.color = "var(--md-sys-color-success)";
+                    } else {
+                        BRAIN.DATA.discount = 0; BRAIN.DATA.code = '';
+                        msg.innerText = "Invalid Code"; msg.style.color = "var(--md-sys-color-error)";
+                    }
+                    BRAIN.UI.refresh();
+                },
+                submit() { const m = `Order: ${JSON.stringify(BRAIN.DATA.cart)}\nDelivery: ${BRAIN.DATA.method} ${BRAIN.DATA.method==='Paxi'?BRAIN.DATA.pType:''}\nPromo: ${BRAIN.DATA.code || 'None'}\nTotal: ${document.getElementById('total-val').innerText}`; window.open(`https://wa.me/27663443753?text=${encodeURIComponent(m)}`); }
             },
             REVIEWS: { save() { localStorage.setItem('ob_rev', document.getElementById('rev-text').value); alert("Review saved!"); BRAIN.UI.toggle('review', false); } }
         };
