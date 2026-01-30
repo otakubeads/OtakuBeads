@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Otaku Beads</title>
+    <title>Otaku Beads | Identity</title>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet">
     <style>
@@ -12,190 +11,117 @@
             --md-sys-color-primary: #6750A4;
             --md-sys-color-surface: #FEF7FF;
             --md-sys-color-surface-container: #F3EDF7;
-            --md-sys-color-surface-container-high: #ECE6F0;
             --md-sys-color-on-surface: #1D1B20;
-            --md-sys-color-error: #B3261E;
             --md-sys-color-success: #388E3C;
             --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Google Sans', sans-serif; background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); overflow-x: hidden; }
-        body.locked { overflow: hidden; }
-
+        body { font-family: 'Google Sans', sans-serif; background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); }
+        
+        .header { position: sticky; top: 0; z-index: 1000; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; background: rgba(254, 247, 255, 0.85); backdrop-filter: blur(15px); }
         .btn-m3 { border: none; font-weight: 700; background: var(--md-sys-color-primary); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s var(--spring); }
-        .btn-m3:active:not(:disabled) { transform: scale(0.92); }
-        .btn-m3:disabled { background: #E1E1E1; color: #9E9E9E; opacity: 0.8; cursor: not-allowed; }
-        .btn-icon { width: 44px; height: 44px; border-radius: 50%; background: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface); }
-
-        .header { position: sticky; top: 0; z-index: 1000; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; background: rgba(254, 247, 255, 0.85); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(0,0,0,0.05); }
-
-        .drawer { position: fixed; top: 0; left: 0; width: 300px; height: 100%; background: var(--md-sys-color-surface); z-index: 5000; transform: translateX(-100%); transition: 0.4s var(--spring); border-radius: 0 28px 28px 0; padding: 24px; box-shadow: 10px 0 40px rgba(0,0,0,0.1); }
+        .drawer { position: fixed; top: 0; left: 0; width: 320px; height: 100%; background: var(--md-sys-color-surface); z-index: 5000; transform: translateX(-100%); transition: 0.4s var(--spring); border-radius: 0 28px 28px 0; padding: 24px; box-shadow: 10px 0 40px rgba(0,0,0,0.1); }
         .sheet { position: fixed; inset: 0; z-index: 4500; transform: translateY(100%); background: var(--md-sys-color-surface); transition: 0.5s var(--spring); border-radius: 32px 32px 0 0; display: flex; flex-direction: column; }
         #scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 3500; display: none; backdrop-filter: blur(8px); }
-
-        .segment-row { display: flex; background: var(--md-sys-color-surface-container-high); padding: 4px; border-radius: 100px; margin: 8px 0; }
-        .seg-btn { flex: 1; padding: 12px; border-radius: 100px; border: none; background: transparent; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 13px; }
-        .seg-btn.active { background: var(--md-sys-color-primary); color: white; }
-
-        .promo-box { display: flex; gap: 8px; margin-top: 16px; background: white; padding: 8px; border-radius: 16px; border: 1px solid var(--md-sys-color-surface-container-high); }
-        .promo-input { flex: 1; border: none; outline: none; padding: 8px; font-family: inherit; font-weight: 700; text-transform: uppercase; }
-
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; padding: 16px; padding-bottom: 140px; }
-        .card { background: var(--md-sys-color-surface-container); border-radius: 28px; padding: 12px; }
+        
+        .order-card { background: white; padding: 16px; border-radius: 20px; margin-bottom: 12px; border: 1px solid var(--md-sys-color-surface-container); }
+        .auth-input { width: 100%; padding: 16px; border-radius: 12px; border: 1px solid #ddd; margin-bottom: 12px; font-size: 16px; }
     </style>
 </head>
-<body id="body">
+<body>
     <div id="scrim" onclick="BRAIN.UI.closeAll()"></div>
 
     <header class="header">
-        <button class="btn-m3 btn-icon" onclick="BRAIN.UI.toggle('menu', true)"><span class="material-symbols-rounded">menu</span></button>
-        <img src="Logo.jpg" style="height:44px; border-radius:12px;" onerror="this.src='logo.jpg'">
-        <button class="btn-m3 btn-icon" onclick="BRAIN.UI.toggle('review', true)"><span class="material-symbols-rounded">rate_review</span></button>
+        <button class="btn-m3" style="width:44px; height:44px; border-radius:50%; background:#ECE6F0; color:black;" onclick="BRAIN.UI.toggle('menu', true)"><span class="material-symbols-rounded">menu</span></button>
+        <img src="Logo.jpg" style="height:40px; border-radius:10px;" onerror="this.src='logo.jpg'">
+        <div id="user-pill" style="font-size:12px; font-weight:700; background:var(--md-sys-color-surface-container); padding:6px 12px; border-radius:100px;">Guest</div>
     </header>
 
     <nav id="menu-drawer" class="drawer">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:32px;">
-            <h2 style="font-weight:700;">Menu</h2>
-            <button class="btn-m3 btn-icon" onclick="BRAIN.UI.toggle('menu', false)"><span class="material-symbols-rounded">close</span></button>
+        <h2 style="margin-bottom:24px;">Otaku Beads</h2>
+        <div id="history-container">
+            <p style="opacity:0.6; font-size:14px; margin-bottom:12px;">ORDER HISTORY</p>
+            <div id="history-list"></div>
         </div>
-        <div style="display:flex; flex-direction:column; gap:12px;">
-            <button class="btn-m3" style="justify-content:start; padding:16px; border-radius:16px; background:var(--md-sys-color-surface-container-high); color:black;" onclick="window.open('https://wa.me/27663443753')"><span class="material-symbols-rounded" style="margin-right:12px;">chat</span> WhatsApp Chat</button>
-            <button class="btn-m3" style="justify-content:start; padding:16px; border-radius:16px; background:var(--md-sys-color-surface-container-high); color:black;" onclick="window.open('https://www.paxi.co.za/tracking')"><span class="material-symbols-rounded" style="margin-right:12px;">local_shipping</span> Track Paxi</button>
-        </div>
+        <button class="btn-m3" style="position:absolute; bottom:24px; width:calc(100% - 48px); height:56px; border-radius:16px;" onclick="BRAIN.AUTH.logout()">Sign Out</button>
     </nav>
 
-    <div id="review-sheet" class="sheet">
+    <div id="auth-sheet" class="sheet">
         <div style="padding:24px; display:flex; justify-content:space-between; align-items:center;">
-            <h2 style="font-weight:700;">Your review matters!</h2>
-            <button class="btn-m3 btn-icon" onclick="BRAIN.UI.toggle('review', false)"><span class="material-symbols-rounded">close</span></button>
+            <h2 style="font-weight:700;">Secure Sign-In</h2>
+            <button class="btn-m3" style="width:44px; height:44px; border-radius:50%; background:#ECE6F0; color:black;" onclick="BRAIN.UI.toggle('auth', false)"><span class="material-symbols-rounded">close</span></button>
         </div>
-        <div style="padding:24px; flex:1;">
-            <textarea id="rev-text" style="width:100%; height:160px; border-radius:24px; border:1px solid #ddd; padding:16px; background:var(--md-sys-color-surface-container-high); font-family:inherit; outline:none;" placeholder="Write your thoughts here..."></textarea>
-            <button class="btn-m3" style="width:100%; height:56px; border-radius:16px; margin-top:16px;" onclick="BRAIN.REVIEWS.save()">Submit Review</button>
+        <div style="padding:24px;">
+            <input type="text" id="auth-name" class="auth-input" placeholder="Your Name">
+            <input type="tel" id="auth-phone" class="auth-input" placeholder="WhatsApp Number">
+            <button class="btn-m3" style="width:100%; height:56px; border-radius:16px;" onclick="BRAIN.AUTH.signIn()">Unlock Profile</button>
         </div>
     </div>
 
-    <div id="bag-sheet" class="sheet">
-        <div style="padding:24px; display:flex; justify-content:space-between; align-items:center;">
-            <h2 style="font-weight:700;">Bag</h2>
-            <button class="btn-m3 btn-icon" onclick="BRAIN.UI.toggle('bag', false)"><span class="material-symbols-rounded">close</span></button>
-        </div>
-        <div style="padding:0 24px; flex:1; overflow-y:auto;">
-            <p style="font-weight:700; font-size:11px; color:var(--md-sys-color-primary); letter-spacing:1px;">DELIVERY METHOD</p>
-            <div class="segment-row">
-                <button id="m-paxi" class="seg-btn active" onclick="BRAIN.ORDER.setMethod('Paxi')">Paxi</button>
-                <button id="m-pick" class="seg-btn" onclick="BRAIN.ORDER.setMethod('Pick-up')">Pick-up</button>
-            </div>
-            <div id="paxi-sub" class="segment-row">
-                <button id="p-std" class="seg-btn active" onclick="BRAIN.ORDER.setPaxi('Standard', 60)">Standard (R60)</button>
-                <button id="p-exp" class="seg-btn" onclick="BRAIN.ORDER.setPaxi('Express', 100)">Express (R100)</button>
-            </div>
-            
-            <div class="promo-box">
-                <input type="text" id="promo-input" class="promo-input" placeholder="Promo Code">
-                <button class="btn-m3" style="padding: 0 16px; border-radius: 12px;" onclick="BRAIN.ORDER.applyPromo()">Apply</button>
-            </div>
-            <div id="promo-msg" style="font-size: 12px; margin: 4px 8px; font-weight: 700;"></div>
-
-            <div id="bag-list-inner" style="margin-top:16px;"></div>
-            <button onclick="BRAIN.CART.clear()" style="width:100%; padding:16px; border:none; background:none; color:var(--md-sys-color-error); font-weight:700;">Clear All Items</button>
-        </div>
-        <div style="padding:24px; background:var(--md-sys-color-surface-container-high); border-radius:32px 32px 0 0;">
-            <div id="discount-row" style="display:none; justify-content:space-between; margin-bottom:4px; font-size:14px; color:var(--md-sys-color-success); font-weight:700;">
-                <span>Discount Applied:</span><span id="discount-val">-R0.00</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-weight:700; font-size:18px;">
-                <span>Total Due:</span><span id="total-val">R0.00</span>
-            </div>
-            <button class="btn-m3" style="width:100%; height:64px; border-radius:20px; font-size:18px;" onclick="BRAIN.ORDER.submit()">WhatsApp Order</button>
-        </div>
-    </div>
-
-    <main class="grid" id="main-grid"></main>
-
-    <button class="btn-m3" style="position:fixed; bottom:24px; right:24px; width:72px; height:72px; border-radius:24px; box-shadow:0 8px 32px rgba(0,0,0,0.3); z-index:2000;" onclick="BRAIN.UI.toggle('bag', true)">
-        <span class="material-symbols-rounded" style="font-size:32px;">shopping_bag</span>
-        <div id="badge" style="position:absolute; top:-5px; right:-5px; background:var(--md-sys-color-error); color:white; width:26px; height:26px; border-radius:50%; display:none; align-items:center; justify-content:center; border:3px solid white; font-weight:700; font-size:12px;">0</div>
-    </button>
+    <main style="padding:20px;">
+        <div id="promo-area"></div>
+        <div id="main-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;"></div>
+    </main>
 
     <script>
         const BRAIN = {
-            DATA: { cart: JSON.parse(localStorage.getItem('ob_c_v10')) || {}, method: 'Paxi', ship: 60, pType: 'Standard', discount: 0, code: '' },
-            UI: {
-                toggle(id, s) {
-                    const el = document.getElementById(id + (id === 'menu' ? '-drawer' : '-sheet'));
-                    el.style.transform = s ? (id === 'menu' ? 'translateX(0)' : 'translateY(0)') : (id === 'menu' ? 'translateX(-100%)' : 'translateY(100%)');
-                    document.getElementById('scrim').style.display = s ? 'block' : 'none';
-                    document.getElementById('body').classList.toggle('locked', s);
-                    if(s && id === 'bag') this.renderBag();
-                },
-                closeAll() { ['menu', 'bag', 'review'].forEach(i => this.toggle(i, false)); },
-                refresh() {
-                    let count = 0; let sub = 0;
-                    Object.entries(BRAIN.DATA.cart).forEach(([id, q]) => { count += q; sub += (q * 45); });
-                    const badge = document.getElementById('badge');
-                    badge.innerText = count; badge.style.display = count > 0 ? 'flex' : 'none';
-                    
-                    const discAmount = sub * BRAIN.DATA.discount;
-                    const shipping = (BRAIN.DATA.method === 'Paxi' ? BRAIN.DATA.ship : 0);
-                    const final = (sub - discAmount) + shipping;
-                    
-                    document.getElementById('discount-row').style.display = discAmount > 0 ? 'flex' : 'none';
-                    document.getElementById('discount-val').innerText = `-R${discAmount.toFixed(2)}`;
-                    document.getElementById('total-val').innerText = `R${final.toFixed(2)}`;
-                    localStorage.setItem('ob_c_v10', JSON.stringify(BRAIN.DATA.cart));
-                },
-                renderBag() {
-                    const items = Object.entries(BRAIN.DATA.cart);
-                    document.getElementById('bag-list-inner').innerHTML = items.length === 0 ? '<p style="text-align:center; padding:40px; opacity:0.5;">Bag empty</p>' : 
-                    items.map(([id, q]) => `
-                        <div style="display:flex; align-items:center; gap:12px; background:var(--md-sys-color-surface-container-high); padding:12px; border-radius:20px; margin-bottom:8px;">
-                            <img src="${id}.jpg" style="width:40px; height:40px; border-radius:10px; object-fit:cover;" onerror="this.src='Logo.jpg'">
-                            <div style="flex:1"><b>#${id}</b></div>
-                            <div style="display:flex; align-items:center; gap:8px; background:white; padding:4px 10px; border-radius:100px;">
-                                <button onclick="BRAIN.CART.update(${id},-1)" style="border:none; background:none; font-weight:700;">-</button>
-                                <b>${q}</b>
-                                <button onclick="BRAIN.CART.update(${id},1)" style="border:none; background:none; font-weight:700;">+</button>
-                            </div>
-                        </div>`).join('');
-                }
+            DATA: {
+                user: JSON.parse(localStorage.getItem('ob_user_v12')) || null,
+                orders: JSON.parse(localStorage.getItem('ob_history_v12')) || [],
+                promoUsed: localStorage.getItem('ob_promo_burned') === 'true'
             },
-            CART: {
-                update(id, d) { BRAIN.DATA.cart[id] = (BRAIN.DATA.cart[id] || 0) + d; if(BRAIN.DATA.cart[id] <= 0) delete BRAIN.DATA.cart[id]; BRAIN.UI.refresh(); BRAIN.UI.renderBag(); },
-                clear() { if(confirm("Clear Bag?")) { BRAIN.DATA.cart = {}; BRAIN.DATA.discount = 0; BRAIN.UI.refresh(); BRAIN.UI.toggle('bag', false); } }
+            AUTH: {
+                signIn() {
+                    const n = document.getElementById('auth-name').value;
+                    const p = document.getElementById('auth-phone').value;
+                    if(n.length < 2 || p.length < 10) return alert("Valid details required");
+                    
+                    BRAIN.DATA.user = { name: n, phone: p, code: 'OB-' + p.slice(-4).toUpperCase() };
+                    localStorage.setItem('ob_user_v12', JSON.stringify(BRAIN.DATA.user));
+                    BRAIN.UI.toggle('auth', false);
+                    location.reload();
+                },
+                logout() { localStorage.removeItem('ob_user_v12'); location.reload(); }
             },
             ORDER: {
-                setMethod(m) { BRAIN.DATA.method = m; document.getElementById('m-paxi').classList.toggle('active', m==='Paxi'); document.getElementById('m-pick').classList.toggle('active', m==='Pick-up'); document.getElementById('paxi-sub').style.display = m==='Paxi' ? 'flex' : 'none'; BRAIN.UI.refresh(); },
-                setPaxi(t, c) { BRAIN.DATA.pType = t; BRAIN.DATA.ship = c; document.getElementById('p-std').classList.toggle('active', t==='Standard'); document.getElementById('p-exp').classList.toggle('active', t==='Express'); BRAIN.UI.refresh(); },
-                applyPromo() {
-                    const input = document.getElementById('promo-input').value.trim().toUpperCase();
-                    const msg = document.getElementById('promo-msg');
-                    if(input === 'OTAKU10') {
-                        BRAIN.DATA.discount = 0.1; BRAIN.DATA.code = input;
-                        msg.innerText = "Code Applied! 10% OFF"; msg.style.color = "var(--md-sys-color-success)";
-                    } else {
-                        BRAIN.DATA.discount = 0; BRAIN.DATA.code = '';
-                        msg.innerText = "Invalid Code"; msg.style.color = "var(--md-sys-color-error)";
-                    }
-                    BRAIN.UI.refresh();
-                },
-                submit() { const m = `Order: ${JSON.stringify(BRAIN.DATA.cart)}\nDelivery: ${BRAIN.DATA.method} ${BRAIN.DATA.method==='Paxi'?BRAIN.DATA.pType:''}\nPromo: ${BRAIN.DATA.code || 'None'}\nTotal: ${document.getElementById('total-val').innerText}`; window.open(`https://wa.me/27663443753?text=${encodeURIComponent(m)}`); }
+                saveOrder(total) {
+                    const order = { date: new Date().toLocaleDateString(), total: total };
+                    BRAIN.DATA.orders.unshift(order);
+                    localStorage.setItem('ob_history_v12', JSON.stringify(BRAIN.DATA.orders));
+                    if(BRAIN.DATA.discountActive) localStorage.setItem('ob_promo_burned', 'true');
+                }
             },
-            REVIEWS: { save() { localStorage.setItem('ob_rev', document.getElementById('rev-text').value); alert("Review saved!"); BRAIN.UI.toggle('review', false); } }
-        };
-
-        window.onload = () => {
-            const g = document.getElementById('main-grid');
-            for(let i=1; i<=28; i++) {
-                const is26 = i === 26;
-                g.innerHTML += `<div class="card" style="opacity:${is26?0.6:1}">
-                    <img src="${is26?'coming soon.jpeg':i+'.jpg'}?v=${Date.now()}" style="width:100%; aspect-ratio:1; border-radius:20px; object-fit:cover; margin-bottom:12px;" onerror="this.src='Logo.jpg'">
-                    <div style="font-weight:700; margin-bottom:10px;">Design #${i}</div>
-                    <button class="btn-m3" style="width:100%; height:44px; border-radius:14px;" onclick="BRAIN.CART.update(${i},1)" ${is26?'disabled':''}>${is26?'Soon':'Add'}</button>
-                </div>`;
+            UI: {
+                toggle(id, s) {
+                    const el = document.getElementById(id + (id==='menu' ? '-drawer' : '-sheet'));
+                    el.style.transform = s ? (id==='menu' ? 'translateX(0)' : 'translateY(0)') : (id==='menu' ? 'translateX(-100%)' : 'translateY(100%)');
+                    document.getElementById('scrim').style.display = s ? 'block' : 'none';
+                },
+                closeAll() { this.toggle('menu', false); this.toggle('auth', false); },
+                init() {
+                    if(BRAIN.DATA.user) {
+                        document.getElementById('user-pill').innerText = BRAIN.DATA.user.name;
+                        if(!BRAIN.DATA.promoUsed) {
+                            document.getElementById('promo-area').innerHTML = `<div style="background:#EADDFF; padding:16px; border-radius:20px; margin-bottom:20px; border:2px dashed var(--md-sys-color-primary);">
+                                <b>Voucher Code: ${BRAIN.DATA.user.code}</b><br><small>10% off your next order</small>
+                            </div>`;
+                        }
+                        this.renderHistory();
+                    } else {
+                        document.getElementById('promo-area').innerHTML = `<button class="btn-m3" style="width:100%; padding:16px; border-radius:20px; margin-bottom:20px;" onclick="BRAIN.UI.toggle('auth', true)">Sign In to Unlock 10% OFF</button>`;
+                    }
+                },
+                renderHistory() {
+                    const h = document.getElementById('history-list');
+                    h.innerHTML = BRAIN.DATA.orders.length ? BRAIN.DATA.orders.map(o => `
+                        <div class="order-card">
+                            <div style="font-weight:700;">Order Sent</div>
+                            <div style="font-size:12px; opacity:0.7;">${o.date} • Total: ${o.total}</div>
+                        </div>`).join('') : '<p style="font-size:12px; opacity:0.5;">No orders yet.</p>';
+                }
             }
-            BRAIN.UI.refresh();
         };
+        window.onload = () => BRAIN.UI.init();
     </script>
 </body>
 </html>
