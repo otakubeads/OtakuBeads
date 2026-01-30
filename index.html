@@ -19,15 +19,17 @@
         
         /* GRID & CARDS */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px; padding-bottom: 120px; }
-        .card { background: var(--c); border-radius: 24px; padding: 8px; border: 1px solid #E7E0EC; }
+        .card { background: var(--c); border-radius: 24px; padding: 8px; border: 1px solid #E7E0EC; position: relative; }
         .card img { width: 100%; aspect-ratio: 1; border-radius: 18px; object-fit: cover; }
         
-        /* EXTENDED FAB */
+        /* COMPOSE-STYLE FAB */
         .fab-extended { position: fixed; bottom: 24px; right: 16px; background: var(--p); color: white; height: 56px; padding: 0 24px; border-radius: 28px; display: flex; align-items: center; gap: 12px; border: none; font-weight: 500; z-index: 2000; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
 
         /* M3 BOTTOM SHEETS */
         .sheet { position: fixed; inset: 0; z-index: 9999; transform: translateY(100%); background: var(--s); transition: 0.5s var(--bez); border-radius: 28px 28px 0 0; padding: 24px; text-align: center; }
         .sheet-handle { width: 32px; height: 4px; background: #79747E; border-radius: 2px; margin: 0 auto 24px; }
+        .sheet-avatar { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 16px; background: #EADDFF; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #E7E0EC; }
+        .sheet-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .pill-btn { background: white; border: 1px solid #79747E; padding: 12px 24px; border-radius: 24px; font-weight: 500; margin: 8px 0; display: block; width: 100%; cursor: pointer; }
         #scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9000; display: none; backdrop-filter: blur(4px); }
     </style>
@@ -49,19 +51,24 @@
     <div id="paxi-sheet" class="sheet">
         <div class="sheet-handle"></div>
         <h2 style="margin-bottom:8px;">Your Bag</h2>
-        <div id="promo-msg" style="display:none; color:var(--p); font-weight:700; margin-bottom:16px;">3rd Item Free Applied!</div>
-        <p id="bag-list" style="margin-bottom:24px;">No items selected</p>
-        <button class="pill-btn" style="background:var(--p); color:white; border:none;" onclick="alert('Standard Paxi Selected')">Standard Paxi (R60)</button>
-        <button class="pill-btn" onclick="alert('Express Paxi Selected')">Express Paxi (R100)</button>
+        <div id="promo-chip" style="display:none; color:var(--p); font-weight:700; margin-bottom:16px;">Buy 2 Get 1 Free!</div>
+        <p id="bag-status" style="margin-bottom:24px;">0 items</p>
+        <button class="pill-btn" style="background:var(--p); color:white; border:none;" onclick="alert('Standard Delivery Selected')">Standard Paxi (R60)</button>
+        <button class="pill-btn" onclick="alert('Express Delivery Selected')">Express Paxi (R100)</button>
     </div>
 
     <div id="auth-sheet" class="sheet">
         <div class="sheet-handle"></div>
-        <div id="s-avatar" style="width:80px; height:80px; border-radius:50%; margin:0 auto 16px; background:#EADDFF; display:flex; align-items:center; justify-content:center; overflow:hidden;"><span class="material-symbols-rounded" style="font-size:48px;">account_circle</span></div>
-        <h3 id="user-name" style="margin-bottom:16px;">Hi, Guest!</h3>
-        <div id="login-zone"><div id="g_id_onload" data-client_id="919544111369-2hhnhfnsc0hvrgnq1dn8fjc8ca3im7jv.apps.googleusercontent.com" data-callback="onSignIn"></div><div class="g_id_signin" data-type="standard" data-shape="pill"></div></div>
-        <button id="logout-btn" class="pill-btn" style="display:none; color:var(--p);" onclick="CORE.AUTH.signOut()">Sign out</button>
-        <button class="pill-btn" onclick="CORE.UI.close()">Continue as guest</button>
+        <div class="sheet-avatar" id="s-avatar"><span class="material-symbols-rounded" style="font-size:48px;">account_circle</span></div>
+        <h3 id="user-name" style="margin-bottom:24px;">Hi, Guest!</h3>
+        
+        <div id="login-zone" style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+            <div id="g_id_onload" data-client_id="919544111369-2hhnhfnsc0hvrgnq1dn8fjc8ca3im7jv.apps.googleusercontent.com" data-callback="onSignIn"></div>
+            <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline" data-size="large"></div>
+            <button class="pill-btn" onclick="CORE.UI.close()">Continue as guest</button>
+        </div>
+
+        <button id="logout-btn" class="pill-btn" style="display:none; color:var(--p); border-color:#F9DEDC;" onclick="CORE.AUTH.signOut()">Sign out</button>
     </div>
 
     <script>
@@ -70,7 +77,7 @@
             AUTH: { signOut() { localStorage.removeItem('ob_auth'); location.reload(); } },
             UI: {
                 open(id) { 
-                    if(id === 'paxi') CORE.LOGIC.refreshCart();
+                    if(id === 'paxi') CORE.LOGIC.update();
                     document.getElementById(id + '-sheet').style.transform = 'translateY(0)'; 
                     document.getElementById('scrim').style.display = 'block'; 
                 },
@@ -80,19 +87,21 @@
                     const g = document.getElementById('main-grid');
                     for(let i=1; i<=28; i++) {
                         const is26 = (i===26);
-                        g.innerHTML += `<div class="card"><img src="${is26?'Logo.jpg':i+'.jpg'}" onerror="this.src='Logo.jpg'"><div style="display:flex; justify-content:space-between; margin:10px 0;"><b>#${i}</b><span>R20</span></div><button class="pill-btn" style="background:#EADDFF; border:none;" ${is26?'disabled':''} onclick="CORE.UI.add(${i})">${is26?'Coming Soon':'Add to Bag'}</button></div>`;
+                        g.innerHTML += `<div class="card"><img src="${is26?'Logo.jpg':i+'.jpg'}" onerror="this.src='Logo.jpg'"><div style="display:flex; justify-content:space-between; padding:8px 0;"><b>#${i}</b><span>R20</span></div><button class="pill-btn" style="background:#EADDFF; border:none; margin:0;" ${is26?'disabled':''} onclick="CORE.UI.add(${i})">${is26?'Coming Soon':'Add to Bag'}</button></div>`;
                     }
                 }
             },
             LOGIC: {
-                refreshCart() {
-                    const count = CORE.bag.length;
-                    document.getElementById('bag-list').innerText = count > 0 ? `Total Items: ${count}` : "No items selected";
-                    document.getElementById('promo-msg').style.display = count >= 3 ? 'block' : 'none';
+                update() {
+                    const c = CORE.bag.length;
+                    document.getElementById('bag-status').innerText = `${c} items in bag`;
+                    document.getElementById('promo-chip').style.display = c >= 3 ? 'block' : 'none';
                 }
             }
         };
+
         function onSignIn(r) { localStorage.setItem('ob_auth', JSON.stringify(JSON.parse(atob(r.credential.split('.')[1])))); location.reload(); }
+
         window.onload = () => {
             const u = JSON.parse(localStorage.getItem('ob_auth') || 'null');
             if(u) {
