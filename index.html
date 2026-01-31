@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>Otaku Beads | Hard Lock</title>
+    <title>Otaku Beads | Secure</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet">
@@ -33,7 +33,7 @@
         .handle { width: 32px; height: 4px; background: var(--outline); border-radius: 2px; margin: 0 auto 24px; flex-shrink: 0; }
         
         .pill-btn { border: 1px solid var(--outline); color: var(--on-surf); background: transparent; padding: 14px; border-radius: 28px; width: 100%; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; margin-top: 10px; }
-        .out-btn { border: 1px solid var(--error); color: var(--error); margin-top: 20px; }
+        .out-btn { border: 1px solid var(--error); color: var(--error); margin-top: 20px; font-weight: 700; }
 
         #scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9000; display: none; backdrop-filter: blur(4px); }
     </style>
@@ -88,7 +88,7 @@
                 const u = JSON.parse(localStorage.getItem('ob_user'));
                 if(u) google.accounts.id.revoke(u.email, () => {});
                 localStorage.removeItem('ob_user');
-                localStorage.setItem('ob_lock', 'true');
+                localStorage.setItem('ob_signout_lock', 'true'); // HARD LOCK
                 location.reload();
             },
             render() {
@@ -100,18 +100,17 @@
                     </div>
                 `).join('');
                 
-                // CHECK LOCK BEFORE RESTORING
-                if(localStorage.getItem('ob_lock') !== 'true') {
-                    const saved = JSON.parse(localStorage.getItem('ob_user'));
-                    if(saved) updateUI(saved);
-                }
+                // RESTORE ONLY IF NO LOCK
+                const isLocked = localStorage.getItem('ob_signout_lock') === 'true';
+                const saved = JSON.parse(localStorage.getItem('ob_user'));
+                if(saved && !isLocked) updateUI(saved);
             }
         };
 
         function onSignIn(resp) {
             const u = JSON.parse(atob(resp.credential.split('.')[1]));
             localStorage.setItem('ob_user', JSON.stringify(u));
-            localStorage.removeItem('ob_lock');
+            localStorage.removeItem('ob_signout_lock'); // UNLOCK
             updateUI(u);
         }
 
