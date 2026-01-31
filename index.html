@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Otaku Beads | Design Guard V216</title>
+    <title>Otaku Beads | V217</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet">
@@ -12,12 +12,12 @@
         body { font-family: 'Outfit', sans-serif; background: var(--bg); color: #E6E1E5; margin: 0; padding-bottom: 140px; }
         header { position: sticky; top: 0; background: rgba(15,13,19,0.85); backdrop-filter: blur(20px); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 2000; border-bottom: 1px solid var(--out); }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px; }
-        .card { background: var(--card); border-radius: 28px; padding: 12px; border: 1px solid var(--out); }
+        .card { background: var(--card); border-radius: 28px; padding: 12px; border: 1px solid var(--out); display: flex; flex-direction: column; }
         .card img { width: 100%; aspect-ratio: 1; border-radius: 20px; object-fit: cover; }
         .sheet { position: fixed; inset: 0; z-index: 10000; transform: translateY(100%); background: var(--bg); transition: 0.5s cubic-bezier(0.3, 0, 0, 1); border-radius: 32px 32px 0 0; padding: 24px; overflow-y: auto; }
         .sheet.full { transform: translateY(0); }
         .btn-m3 { height: 56px; border-radius: 28px; border: none; font-weight: 700; width: 100%; background: var(--prim); color: var(--on-prim); cursor: pointer; }
-        #bag-home { position: fixed; bottom: 30px; right: 20px; background: var(--prim); color: var(--on-prim); padding: 18px 28px; border-radius: 32px; z-index: 5000; font-weight: 700; border: none; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+        #bag-home { position: fixed; bottom: 30px; right: 20px; background: var(--prim); color: var(--on-prim); padding: 18px 28px; border-radius: 32px; z-index: 5000; font-weight: 700; border: none; }
         body.sheet-open #bag-home { opacity: 0; visibility: hidden; }
     </style>
 </head>
@@ -40,23 +40,40 @@
 
     <main id="store-grid" class="grid"></main>
 
-    <div id="cart-sheet" class="sheet">
-        <div style="display:flex; justify-content:space-between; margin-bottom:24px;">
-            <h2>Your Selection</h2>
+    <div id="auth-sheet" class="sheet">
+        <div style="display:flex; justify-content:space-between; margin-bottom:30px;">
+            <h2>Google Harmony</h2>
             <span class="material-symbols-rounded" onclick="HARMONY.close()" style="cursor:pointer">close</span>
         </div>
-        <div id="cart-items-list"></div>
+        <div id="g_id_onload" data-client_id="919544111369-2hhnhfnsc0hvrgnq1dn8fjc8ca3im7jv.apps.googleusercontent.com" data-callback="onGoogleAuth"></div>
+        <div class="g_id_signin" data-type="standard" data-shape="pill"></div>
+    </div>
+
+    <div id="cart-sheet" class="sheet">
+        <div style="display:flex; justify-content:space-between; margin-bottom:24px;">
+            <h2>Your Bag</h2>
+            <span class="material-symbols-rounded" onclick="HARMONY.close()" style="cursor:pointer">close</span>
+        </div>
+        <div id="cart-list"></div>
         <div style="background:var(--card); padding:20px; border-radius:24px; border:1px solid var(--out); margin: 20px 0;">
-            <p style="margin:0 0 10px 0; font-weight:700;">Shipping (Paxi Section #X)</p>
+            <p style="margin:0 0 10px 0; font-weight:700;">Delivery (Paxi Section #X)</p>
             <select id="paxi-sel" style="width:100%; padding:14px; border-radius:14px; background:var(--bg); color:white; border:1px solid var(--out);">
                 <option value="Standard (R60)">Standard Delivery - R60</option>
                 <option value="Express (R100)">Paxi Express - R100</option>
             </select>
         </div>
-        <button class="btn-m3" onclick="HARMONY.checkout()">WhatsApp Order</button>
+        <button class="btn-m3" onclick="HARMONY.checkout()">Order on WhatsApp</button>
     </div>
 
-    <div id="auth-sheet" class="sheet">...</div>
+    <div id="reviews-sheet" class="sheet">
+        <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+            <h2>Community Feedback</h2>
+            <span class="material-symbols-rounded" onclick="HARMONY.close()" style="cursor:pointer">close</span>
+        </div>
+        <div id="review-feed">
+            <p style="opacity:0.5; text-align:center;">Signing in to read reviews...</p>
+        </div>
+    </div>
 
     <script>
         const HARMONY = {
@@ -64,36 +81,36 @@
             async init() {
                 const res = await fetch('names.json?v=' + Date.now());
                 this.db = await res.json();
-                this.render();
+                this.renderStore();
             },
             ui(id) { 
-                if(id === 'cart') this.renderBag();
+                if(id === 'cart') this.syncCart();
                 document.getElementById(id+'-sheet').classList.add('full'); 
                 document.body.classList.add('sheet-open'); 
             },
             close() { document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('full')); document.body.classList.remove('sheet-open'); },
-            add(design, price) {
-                this.bag[design] = (this.bag[design] || 0) + 1;
-                this.total += price;
+            add(n, p) {
+                this.bag[n] = (this.bag[n] || 0) + 1;
+                this.total += p;
                 document.getElementById('bag-label').innerText = 'R' + this.total;
             },
-            renderBag() {
-                const list = document.getElementById('cart-items-list');
-                const designs = Object.keys(this.bag);
-                list.innerHTML = designs.length ? designs.map(d => `
+            syncCart() {
+                const list = document.getElementById('cart-list');
+                const keys = Object.keys(this.bag);
+                list.innerHTML = keys.length ? keys.map(k => `
                     <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--out);">
-                        <span>Design ${d.replace('.jpg','')} (x${this.bag[d]})</span>
-                        <span>R${this.bag[d] * (d.toLowerCase().includes('keychain')?50:40)}</span>
-                    </div>`).join('') : "<p style='text-align:center; opacity:0.5;'>No designs selected yet.</p>";
+                        <span>Design ${k} (x${this.bag[k]})</span>
+                        <span>R${this.bag[k] * (k.toLowerCase().includes('keychain')?50:40)}</span>
+                    </div>`).join('') : "<p style='text-align:center; opacity:0.5;'>Bag is empty.</p>";
             },
-            render() {
+            renderStore() {
                 document.getElementById('store-grid').innerHTML = this.db.map(name => {
                     const isSoon = name.includes('26');
                     const p = name.toLowerCase().includes('keychain') ? 50 : 40;
                     return `
                     <div class="card" ${isSoon ? 'style="opacity:0.6"' : ''}>
                         <img src="${name}.jpg" onerror="this.src='coming soon1.jpeg'">
-                        <div style="margin:12px 0; font-weight:700;">${isSoon ? 'Design #26' : 'Design ' + name}</div>
+                        <div style="margin:12px 0; font-weight:700;">Design ${name}</div>
                         <button class="btn-m3" style="height:40px; font-size:12px;" ${isSoon ? 'disabled' : ''} onclick="HARMONY.add('${name}',${p})">
                             ${isSoon ? 'Coming Soon' : 'Add Design - R'+p}
                         </button>
@@ -101,12 +118,12 @@
                 }).join('');
             },
             checkout() {
-                if(this.total === 0) return alert("Select a design first!");
                 const del = document.getElementById('paxi-sel').value;
-                const items = Object.keys(this.bag).map(d => `Design ${d} x${this.bag[d]}`).join(', ');
-                window.open(`https://wa.me/27123456789?text=Order:%20${items}%20Shipping:%20${del}`, '_blank');
+                const summary = Object.keys(this.bag).map(k => `Design ${k} x${this.bag[k]}`).join(', ');
+                window.open(`https://wa.me/27123456789?text=Order:%20${summary}%20Shipping:%20${del}`, '_blank');
             }
         };
+        function onGoogleAuth(r) { console.log("Harmony Success"); HARMONY.close(); }
         window.onload = () => HARMONY.init();
     </script>
 </body>
