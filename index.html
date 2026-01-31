@@ -3,51 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Otaku Beads | V224</title>
+    <title>Otaku Beads | V226 Stable</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet">
     <style>
         :root { --bg: #0F0D13; --card: #1C1921; --prim: #D0BCFF; --on-prim: #381E72; --out: #49454F; }
         body { font-family: 'Outfit', sans-serif; background: var(--bg); color: #E6E1E5; margin: 0; padding-bottom: 120px; }
-        header { position: sticky; top: 0; background: rgba(15,13,19,0.9); backdrop-filter: blur(15px); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 2000; border-bottom: 1px solid var(--out); }
         
-        /* M3 EXPRESSIVE GRID [cite: 2026-01-29] */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; }
+        /* HEADER PILLAR [cite: 2026-01-31] */
+        header { position: sticky; top: 0; background: rgba(15,13,19,0.9); backdrop-filter: blur(15px); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 5000; border-bottom: 1px solid var(--out); }
         
-        .card { 
-            background: var(--card); 
-            border-radius: 28px; 
-            overflow: hidden; /* Important for full-bleed images */
-            border: 1px solid var(--out); 
-            display: flex; 
-            flex-direction: column;
-            min-height: 280px; /* Forces uniform height */
-        }
-
-        .card img { 
-            width: 100%; 
-            aspect-ratio: 1 / 1; 
-            object-fit: cover; /* Fills the square completely [cite: 2026-01-27] */
-            background: #222;
-        }
-
+        /* BOUTIQUE GRID [cite: 2026-01-29] */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; position: relative; z-index: 1; }
+        .card { background: var(--card); border-radius: 28px; overflow: hidden; border: 1px solid var(--out); display: flex; flex-direction: column; min-height: 280px; }
+        .card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: #222; }
         .card-content { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        
-        .design-name { 
-            font-weight: 700; 
-            font-size: 14px; 
-            margin-bottom: 8px; 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; /* Keeps labels on one line */
-        }
+        .design-name { font-weight: 700; font-size: 14px; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+        /* INTERACTIVE BUTTONS [cite: 2026-01-28, 2026-01-29] */
+        #bag-home { position: fixed; bottom: 24px; right: 20px; background: var(--prim); color: var(--on-prim); padding: 16px 24px; border-radius: 28px; z-index: 9999; font-weight: 700; border: none; display: flex; align-items: center; gap: 10px; cursor: pointer; box-shadow: 0 8px 32px rgba(0,0,0,0.6); }
+        
+        /* M3 SLIDING SHEETS [cite: 2026-01-28, 2026-01-29] */
         .sheet { position: fixed; inset: 0; z-index: 10000; transform: translateY(100%); background: var(--bg); transition: 0.5s cubic-bezier(0.1, 0.7, 0.1, 1); border-radius: 32px 32px 0 0; padding: 24px; overflow-y: auto; }
         .sheet.full { transform: translateY(0); }
-        .btn-m3 { height: 44px; border-radius: 22px; border: none; font-weight: 700; width: 100%; background: var(--prim); color: var(--on-prim); cursor: pointer; font-size: 13px; }
-        
-        #bag-home { position: fixed; bottom: 24px; right: 20px; background: var(--prim); color: var(--on-prim); padding: 16px 24px; border-radius: 28px; z-index: 5000; font-weight: 700; border: none; display: flex; align-items: center; gap: 10px; }
+        .btn-m3 { height: 44px; border-radius: 22px; border: none; font-weight: 700; width: 100%; background: var(--prim); color: var(--on-prim); cursor: pointer; }
     </style>
 </head>
 <body>
@@ -56,8 +36,10 @@
             <img src="logo.jpg" style="width:32px; height:32px; border-radius:8px;">
             <h1 style="font-size:18px; margin:0;">Otaku Beads</h1>
         </div>
-        <div id="user-display" style="font-size:12px; color:var(--prim); font-weight:700;">Hi, Elginno</div>
-        <span class="material-symbols-rounded" onclick="UI.open('auth')" style="color:var(--prim); cursor:pointer;">account_circle</span>
+        <div style="display:flex; align-items:center; gap:12px;">
+            <div id="user-display" style="font-size:12px; color:var(--prim); font-weight:700;"></div>
+            <span class="material-symbols-rounded" onclick="UI.open('auth')" style="color:var(--prim); cursor:pointer; font-size:28px; position:relative; z-index:5001;">account_circle</span>
+        </div>
     </header>
 
     <main id="store-grid" class="grid"></main>
@@ -67,15 +49,40 @@
         <span id="bag-count">R0</span>
     </button>
 
+    <div id="auth-sheet" class="sheet">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:40px;">
+            <h2>Account</h2>
+            <span class="material-symbols-rounded" onclick="UI.close()" style="cursor:pointer">close</span>
+        </div>
+        <div id="g-login-box" style="display:flex; justify-content:center;">
+            <div id="g_id_onload" data-client_id="919544111369-2hhnhfnsc0hvrgnq1dn8fjc8ca3im7jv.apps.googleusercontent.com" data-callback="handleAuth"></div>
+            <div class="g_id_signin" data-type="standard"></div>
+        </div>
+    </div>
+
+    <div id="cart-sheet" class="sheet">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+            <h2>Your Bag</h2>
+            <span class="material-symbols-rounded" onclick="UI.close()" style="cursor:pointer">close</span>
+        </div>
+        <div id="cart-items" style="margin-bottom:20px;"></div>
+        <button class="btn-m3" onclick="ENGINE.checkout()">WhatsApp Order</button>
+    </div>
+
     <script>
+        const UI = {
+            open(id) { document.getElementById(id+'-sheet').classList.add('full'); document.body.style.overflow = 'hidden'; },
+            close() { document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('full')); document.body.style.overflow = 'auto'; }
+        };
+
         const ENGINE = {
             bag: {},
             async init() {
                 const res = await fetch('names.json?v=' + Date.now());
                 this.db = await res.json();
-                this.renderStore();
+                this.render();
             },
-            renderStore() {
+            render() {
                 document.getElementById('store-grid').innerHTML = this.db.map(n => {
                     const isSoon = n.includes('26');
                     const p = n.toLowerCase().includes('keychain') ? 50 : 40;
@@ -84,30 +91,30 @@
                         <img src="${n}.jpg" onerror="this.src='coming soon1.jpeg'">
                         <div class="card-content">
                             <div class="design-name">Design ${n.replace('.jpg','')}</div>
-                            <button class="btn-m3" ${isSoon ? 'disabled' : ''} onclick="ENGINE.add('${n}')">
-                                ${isSoon ? 'Coming Soon' : 'Add - R'+p}
+                            <button class="btn-m3" ${isSoon ? 'disabled' : ''} onclick="ENGINE.add('${n}',${p})">
+                                ${isSoon ? 'Soon' : 'Add - R'+p}
                             </button>
                         </div>
                     </div>`;
                 }).join('');
             },
-            add(n) {
+            add(n, p) {
                 this.bag[n] = (this.bag[n] || 0) + 1;
-                this.updateTotal();
-            },
-            updateTotal() {
                 let total = 0;
                 Object.keys(this.bag).forEach(k => {
-                    total += (k.toLowerCase().includes('keychain') ? 50 : 40) * this.bag[k];
+                    const price = k.toLowerCase().includes('keychain') ? 50 : 40;
+                    total += price * this.bag[k];
                 });
                 document.getElementById('bag-count').innerText = 'R' + total;
-            }
+            },
+            checkout() { window.open('https://wa.me/27123456789?text=Order', '_blank'); }
         };
 
-        const UI = {
-            open(id) { document.getElementById(id+'-sheet')?.classList.add('full'); },
-            close() { document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('full')); }
-        };
+        function handleAuth(r) {
+            const user = JSON.parse(atob(r.credential.split('.')[1]));
+            document.getElementById('user-display').innerText = "Hi, " + user.given_name;
+            UI.close();
+        }
 
         window.onload = () => ENGINE.init();
     </script>
