@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Otaku Beads | V168</title>
+    <title>Otaku Beads | V170</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #0F0D13; --card: #1C1921; --prim: #D0BCFF; --on-prim: #381E72; --out: #49454F; }
@@ -11,10 +11,14 @@
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; }
         .card { background: var(--card); border-radius: 28px; padding: 10px; border: 1px solid var(--out); position: relative; }
         .card img { width: 100%; aspect-ratio: 1; border-radius: 22px; object-fit: cover; }
-        .card.coming-soon { opacity: 0.6; filter: grayscale(0.8); }
+        .card.coming-soon { opacity: 0.5; filter: grayscale(1); }
         .badge { display: inline-block; padding: 2px 8px; border-radius: 8px; background: #4A4458; font-size: 10px; color: var(--prim); text-transform: uppercase; margin-bottom: 4px; font-weight: 700; }
-        .btn-m3 { height: 40px; border-radius: 20px; border: none; font-weight: 700; width: 100%; cursor: pointer; background: var(--prim); color: var(--on-prim); }
+        .btn-m3 { height: 40px; border-radius: 20px; border: none; font-weight: 700; width: 100%; cursor: pointer; background: var(--prim); color: var(--on-prim); margin-top: 8px; }
         .btn-m3.disabled { background: var(--out); color: #938F99; cursor: not-allowed; }
+        
+        /* Paxi Section #X [cite: 2026-01-29] */
+        .sheet { position: fixed; inset: 0; z-index: 9999; transform: translateY(100%); background: #1C1921; transition: 0.5s cubic-bezier(0.3, 0, 0, 1); border-radius: 32px 32px 0 0; padding: 24px; }
+        .sheet.full { transform: translateY(0); }
     </style>
 </head>
 <body>
@@ -24,22 +28,29 @@
 
     <main id="cat" class="grid"></main>
 
+    <div id="paxi-sheet" class="sheet">
+        <div style="width:32px; height:4px; background:var(--out); border-radius:10px; margin:0 auto 20px;"></div>
+        <h2>Delivery Method</h2>
+        <div style="background:var(--out); padding:16px; border-radius:16px; margin-bottom:12px;">
+            <div style="font-weight:700;">Paxi Express (Pep to Pep)</div>
+            <div style="font-size:12px;">7-9 Days • R100</div>
+        </div>
+        <button class="btn-m3" onclick="document.getElementById('paxi-sheet').classList.remove('full')">Back</button>
+    </div>
+
     <script>
         const CORE = {
             items: ["Akane_keychain", "Bulma_bracelet", "Chi-Chi_bracelet", "Dengi_keychain", "Gojo_keychain"],
             render() {
-                let html = this.items.map(name => {
-                    const type = name.toLowerCase().includes('keychain') ? 'Keychain' : 'Bracelet';
-                    return `
+                let html = this.items.map(name => `
                     <div class="card">
                         <img src="${name}.jpg" onerror="this.src='logo.jpg'">
                         <div style="padding: 8px 4px;">
-                            <span class="badge">${type}</span>
-                            <div style="font-weight:700; font-size:14px; margin-bottom:8px;">${name.replace(/_/g, ' ')}</div>
-                            <button class="btn-m3">Add</button>
+                            <span class="badge">${name.includes('keychain') ? 'Keychain' : 'Bracelet'}</span>
+                            <div style="font-weight:700; font-size:14px;">${name.replace(/_/g, ' ')}</div>
+                            <button class="btn-m3" onclick="document.getElementById('paxi-sheet').classList.add('full')">Checkout</button>
                         </div>
-                    </div>`;
-                }).join('');
+                    </div>`).join('');
 
                 // Design #26 Placeholder [cite: 2026-01-31]
                 html += `
@@ -47,11 +58,10 @@
                     <img src="26.jpg" onerror="this.src='logo.jpg'">
                     <div style="padding: 8px 4px;">
                         <span class="badge">Exclusive</span>
-                        <div style="font-weight:700; font-size:14px; margin-bottom:8px;">Design #26</div>
+                        <div style="font-weight:700; font-size:14px;">Design #26</div>
                         <button class="btn-m3 disabled">Coming Soon</button>
                     </div>
                 </div>`;
-                
                 document.getElementById('cat').innerHTML = html;
             }
         };
