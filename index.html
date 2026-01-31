@@ -3,31 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Otaku Beads | V188</title>
+    <title>Otaku Beads | V189</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet">
     <style>
         :root { --bg: #0F0D13; --card: #1C1921; --prim: #D0BCFF; --on-prim: #381E72; --sec: #4A4458; --out: #49454F; }
-        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: #E6E1E5; margin: 0; padding-bottom: 120px; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: #E6E1E5; margin: 0; padding-bottom: 120px; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         
         header { position: sticky; top: 0; background: rgba(15,13,19,0.9); backdrop-filter: blur(20px); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 100; border-bottom: 1px solid var(--out); }
         .logo-box { width: 40px; height: 40px; border-radius: 12px; overflow: hidden; border: 1px solid var(--out); }
-        .logo-box img { width: 100%; height: 100%; object-fit: cover; }
 
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; }
-        .card { background: var(--card); border-radius: 28px; padding: 12px; border: 1px solid var(--out); display: flex; flex-direction: column; }
+        
+        /* Card Physics [cite: 2026-01-29] */
+        .card { background: var(--card); border-radius: 28px; padding: 12px; border: 1px solid var(--out); transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s; position: relative; }
+        .card:active { transform: scale(0.98); box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
         .card img { width: 100%; aspect-ratio: 1; border-radius: 20px; object-fit: cover; background: #222; }
         
-        .card.is-soon { opacity: 0.6; filter: grayscale(1); }
+        .badge { align-self: flex-start; display: inline-block; padding: 4px 10px; border-radius: 8px; background: var(--sec); font-size: 10px; color: var(--prim); text-transform: uppercase; margin: 8 : 0 4px; font-weight: 700; }
+        .info-row { display: flex; justify-content: space-between; align-items: center; margin: 4px 0 12px; }
+        .title { font-weight: 700; font-size: 15px; text-transform: capitalize; }
+        .price { font-weight: 700; color: var(--prim); }
         
-        .badge { align-self: flex-start; padding: 4px 10px; border-radius: 8px; background: var(--sec); font-size: 10px; color: var(--prim); text-transform: uppercase; margin: 8px 0 4px; font-weight: 700; }
-        .info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .title { font-weight: 700; font-size: 16px; text-transform: capitalize; letter-spacing: 0.2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .price { font-weight: 700; color: var(--prim); font-size: 15px; }
-        
-        .btn-m3 { height: 44px; border-radius: 22px; border: none; font-weight: 700; width: 100%; cursor: pointer; background: var(--prim); color: var(--on-prim); font-family: 'Outfit'; }
-        .btn-m3.disabled { background: var(--out); color: #938F99; cursor: not-allowed; }
+        /* M3 Button Physics [cite: 2026-01-29] */
+        .btn-m3 { 
+            position: relative; overflow: hidden; height: 44px; border-radius: 22px; border: none; 
+            font-weight: 700; width: 100%; cursor: pointer; background: var(--prim); color: var(--on-prim);
+            transition: transform 0.1s cubic-bezier(0, 0, 0.2, 1), background-color 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-m3:active { transform: scale(0.95); background-color: #BEA4FF; }
+        .btn-m3.disabled { background: var(--out); color: #938F99; cursor: not-allowed; transform: none !important; }
 
+        /* Paxi Sheet [cite: 2026-01-29] */
         .sheet { position: fixed; inset: 0; z-index: 9999; transform: translateY(100%); background: var(--card); transition: 0.5s cubic-bezier(0.3, 0, 0, 1); border-radius: 32px 32px 0 0; padding: 24px; }
         .sheet.full { transform: translateY(0); }
     </style>
@@ -35,22 +43,25 @@
 <body>
     <header>
         <div style="display:flex; align-items:center; gap:12px;">
-            <div class="logo-box"><img src="logo.jpg"></div>
+            <div class="logo-box"><img src="logo.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
             <h1 style="font-size:18px; margin:0;">Otaku Beads</h1>
         </div>
-        <span class="material-symbols-rounded" onclick="CORE.open('cart')" style="color:var(--prim)">shopping_bag</span>
+        <span class="material-symbols-rounded" onclick="CORE.open('cart')" style="color:var(--prim); font-size:28px;">shopping_bag</span>
     </header>
 
     <main id="cat" class="grid"></main>
 
     <div id="cart-sheet" class="sheet">
-        <div style="width:32px; height:4px; background:var(--out); border-radius:10px; margin:0 auto 20px;"></div>
-        <h2 style="margin-bottom:16px;">Delivery (Section #X)</h2>
-        <div style="background:var(--sec); padding:16px; border-radius:16px; border:2px solid var(--prim);">
-            <div style="font-weight:700;">Paxi Express</div>
-            <div style="font-size:12px;">Pep Store Pickup • R100</div>
+        <div style="width:32px; height:4px; background:var(--out); border-radius:10px; margin:0 auto 24px;"></div>
+        <h2 style="margin:0 0 16px;">Delivery (Section #X)</h2>
+        <div style="background:var(--sec); padding:16px; border-radius:20px; border:2px solid var(--prim);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-weight:700;">Paxi Express</span>
+                <span style="font-weight:700;">R100</span>
+            </div>
+            <p style="font-size:12px; opacity:0.7; margin:4px 0 0;">Pep-to-Pep Delivery</p>
         </div>
-        <button class="btn-m3" style="margin-top:auto; height:56px; border-radius:28px;" onclick="CORE.close()">Close</button>
+        <button class="btn-m3" style="margin-top:auto; height:56px; border-radius:28px;" onclick="CORE.close()">Confirm</button>
     </div>
 
     <script>
@@ -64,26 +75,25 @@
             },
             render() {
                 document.getElementById('cat').innerHTML = this.items.map(name => {
-                    const isPlaceholder = name.toLowerCase().includes('soon');
-                    const isKeychain = name.toLowerCase().includes('keychain');
-                    
-                    let cleanTitle = name.replace(/_/g, ' ').replace(/bracelet/gi, '').replace(/keychain/gi, '').trim();
-                    if (isPlaceholder) cleanTitle = "Design #26";
-                    
-                    const price = isKeychain ? "R50" : "R40";
-                    const badgeText = isPlaceholder ? "Coming Soon" : (isKeychain ? 'Keychain' : 'Bracelet');
+                    const isSoon = name.toLowerCase().includes('soon');
+                    const isKC = name.toLowerCase().includes('keychain');
+                    let title = name.replace(/_/g, ' ').replace(/bracelet|keychain/gi, '').trim();
+                    if (isSoon) title = "Design #26";
                     
                     return `
-                    <div class="card ${isPlaceholder ? 'is-soon' : ''}">
+                    <div class="card ${isSoon ? 'is-soon' : ''}">
                         <img src="${name}.jpg" onerror="this.src='${name}.jpeg'; this.onerror=()=>this.src='coming soon1.jpeg'">
-                        <div class="badge">${badgeText}</div>
+                        <div class="badge">${isSoon ? 'Coming Soon' : (isKC ? 'Keychain' : 'Bracelet')}</div>
                         <div class="info-row">
-                            <div class="title">${cleanTitle}</div>
-                            ${!isPlaceholder ? `<div class="price">${price}</div>` : ''}
+                            <div class="title">${title}</div>
+                            ${!isSoon ? `<div class="price">R${isKC?50:40}</div>` : ''}
                         </div>
-                        <button class="btn-m3 ${isPlaceholder ? 'disabled' : ''}" 
-                                ${isPlaceholder ? 'disabled' : `onclick="CORE.open('cart')"`}>
-                            ${isPlaceholder ? 'Locked' : 'Add to Bag'}
+                        <button class="btn-m3 ${isSoon ? 'disabled' : ''}" 
+                                ${isSoon ? 'disabled' : `onclick="CORE.open('cart')"`}>
+                            <span class="material-symbols-rounded" style="font-size:18px">
+                                ${isSoon ? 'lock' : 'add_shopping_cart'}
+                            </span>
+                            ${isSoon ? 'Locked' : 'Add'}
                         </button>
                     </div>`;
                 }).join('');
