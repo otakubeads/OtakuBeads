@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Otaku Beads | V160 Path Fix</title>
+    <title>Otaku Beads | V161 Image Fix</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet">
@@ -36,12 +36,6 @@
 
     <main id="cat" class="grid"></main>
 
-    <div id="auth-sheet" class="sheet">
-        <div style="width:32px; height:4px; background:var(--out); border-radius:10px; margin:0 auto 20px;"></div>
-        <div id="g_btn_container" style="display:flex; justify-content:center; margin-bottom:20px;"><div id="g_btn"></div></div>
-        <button class="btn-m3" style="background:var(--out); color:white; margin-top:auto;" onclick="CORE.close()">Close</button>
-    </div>
-
     <script>
         const CORE = {
             items: ["Akane_keychain", "Bulma_bracelet", "Chi-Chi_bracelet", "Dengi_keychain", "Gojo_keychain"],
@@ -51,17 +45,16 @@
                     this.items = await res.json();
                 } catch(e) {}
                 this.render();
-                this.initGSI();
             },
             render() {
                 const q = document.getElementById('q').value.toLowerCase();
                 const container = document.getElementById('cat');
-                // Updated path logic to look inside the subfolder [cite: 2026-01-27]
+                // POINTING TO OTAKUBEADS/ SUBFOLDER [cite: 2026-01-31]
                 container.innerHTML = this.items.filter(n => n.toLowerCase().includes(q)).map(name => {
                     const type = name.toLowerCase().includes('keychain') ? 'Keychain' : 'Bracelet';
                     return `
                     <div style="background:var(--card); border-radius:28px; padding:10px; border:1px solid var(--out);">
-                        <img src="${name}.jpg" style="width:100%; aspect-ratio:1; border-radius:22px; object-fit:cover;" onerror="this.src='logo.jpg'">
+                        <img src="OtakuBeads/${name}.jpg" style="width:100%; aspect-ratio:1; border-radius:22px; object-fit:cover;" onerror="this.src='logo.jpg'">
                         <div style="padding:8px 4px 0;">
                             <span class="badge">${type}</span>
                             <div style="font-weight:700; font-size:13px; text-transform:capitalize; margin-bottom:8px;">${name.replace(/_/g, ' ')}</div>
@@ -69,10 +62,6 @@
                         </div>
                     </div>`;
                 }).join('');
-            },
-            initGSI() {
-                google.accounts.id.initialize({ client_id: "919544111369-2hhnhfnsc0hvrgnq1dn8fjc8ca3im7jv.apps.googleusercontent.com", callback: (r) => { localStorage.setItem('ob_user', JSON.stringify(JSON.parse(atob(r.credential.split('.')[1])))); location.reload(); } });
-                google.accounts.id.renderButton(document.getElementById("g_btn"), { theme: "filled_black", shape: "pill" });
             },
             open(id) { document.getElementById(id+'-sheet').classList.add('full'); document.getElementById('scrim').style.display='block'; },
             close() { document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('full')); document.getElementById('scrim').style.display='none'; }
