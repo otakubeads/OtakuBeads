@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>Otaku Beads | Iron Gate</title>
+    <title>Otaku Beads | Restored</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet">
@@ -24,13 +24,24 @@
         .auth-trigger { display: flex; align-items: center; gap: 8px; background: var(--container); padding: 4px; border-radius: 20px; border: 1px solid var(--outline); cursor: pointer; }
         .auth-trigger img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
         
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; padding-bottom: 120px; }
+        .card { background: var(--container); border-radius: 24px; padding: 12px; border: 1px solid var(--outline); }
+        .card img { width: 100%; aspect-ratio: 1; border-radius: 16px; object-fit: cover; margin-bottom: 8px; }
+        .coming-soon { opacity: 0.5; filter: grayscale(1); pointer-events: none; }
+        .cs-btn { background: #49454F !important; color: #938F99 !important; border: none !important; }
+
         .sheet { position: fixed; inset: 0; z-index: 9999; transform: translateY(100%); background: #2D2933; transition: 0.4s var(--bez); border-radius: 28px 28px 0 0; padding: 24px; display: flex; flex-direction: column; }
         .sheet.open { transform: translateY(0); }
         .handle { width: 32px; height: 4px; background: var(--outline); border-radius: 2px; margin: 0 auto 24px; flex-shrink: 0; }
         
         .pill-btn { border: 1px solid var(--outline); color: var(--on-surf); background: transparent; padding: 14px; border-radius: 28px; width: 100%; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; margin-top: 10px; }
+        .primary-btn { background: var(--primary); color: var(--on-prim); border: none; font-weight: 700; }
         .out-btn { background: #442B2B; color: var(--error); border: 1px solid #603F3F; margin-top: 24px; font-weight: 700; }
 
+        .paxi-card { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-radius: 16px; background: var(--container); border: 1px solid var(--outline); margin-top: 12px; cursor: pointer; transition: 0.3s; }
+        .paxi-card.active { border: 2px solid var(--primary); background: #353239; }
+
+        .fab { position: fixed; bottom: 16px; right: 16px; background: var(--primary); color: var(--on-prim); height: 56px; padding: 0 24px; border-radius: 18px; border: none; font-weight: 700; z-index: 2000; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
         #scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9000; display: none; backdrop-filter: blur(4px); }
     </style>
 </head>
@@ -45,13 +56,14 @@
         </div>
     </header>
 
+    <main class="grid" id="main-grid"></main>
+    <button class="fab" onclick="CORE.open('bag')">Bag (<span id="bag-count">0</span>)</button>
+
     <div id="auth-sheet" class="sheet">
         <div class="handle"></div>
         <div style="text-align:center;">
-            <h2 id="auth-title" style="margin-bottom:8px;">Account</h2>
-            <div id="g_btn_box" style="display:flex; justify-content:center; margin-top:20px;">
-                <div id="g_btn"></div>
-            </div>
+            <h2 id="auth-title">Account</h2>
+            <div id="g_btn_box" style="display:flex; justify-content:center; margin-top:20px;"><div id="g_btn"></div></div>
             <div id="user-display" style="display:none; margin-top:20px;">
                 <p id="user-mail" style="opacity:0.6; font-size:14px; margin-bottom:12px;"></p>
                 <button class="pill-btn out-btn" onclick="CORE.signOut()">SIGN OUT</button>
@@ -60,16 +72,54 @@
         </div>
     </div>
 
-    <div id="menu-sheet" class="sheet"><div class="handle"></div><h2>Menu</h2><button class="pill-btn" onclick="CORE.close()">Close</button></div>
+    <div id="bag-sheet" class="sheet">
+        <div class="handle"></div>
+        <h2>Bag</h2>
+        <div id="bag-list" style="flex-grow:1; overflow-y:auto; margin-top:16px;"></div>
+        <div class="paxi-section">
+            <div class="paxi-card active" id="px-s" onclick="CORE.setPaxi(60, 'Standard', 'px-s')">
+                <div><b>Standard</b><br><small>7-9 Days</small></div><b>R60</b>
+            </div>
+            <div class="paxi-card" id="px-e" onclick="CORE.setPaxi(100, 'Express', 'px-e')">
+                <div><b>Express</b><br><small>3-5 Days</small></div><b>R100</b>
+            </div>
+        </div>
+        <div style="margin:20px 0; text-align:center;"><span id="total" style="font-size:32px; font-weight:700; color:var(--primary);">R0</span></div>
+        <button class="pill-btn primary-btn" onclick="CORE.wa()">WhatsApp Order</button>
+    </div>
+
+    <div id="menu-sheet" class="sheet"><div class="handle"></div><h2>Collections</h2><button class="pill-btn" onclick="CORE.close()">Close</button></div>
 
     <script>
+        const CATALOG = Array.from({length: 28}, (_, i) => ({ id: i + 1, name: `Design #${i+1}` }));
+        
         const CORE = {
+            bag: JSON.parse(localStorage.getItem('ob_bag') || '{}'),
+            fee: 60, type: 'Standard',
             open(id) { 
                 document.getElementById(id+'-sheet').classList.add('open'); 
                 document.getElementById('scrim').style.display='block'; 
                 if(id==='auth') this.initGSI();
+                if(id==='bag') this.refreshBag();
             },
             close() { document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('open')); document.getElementById('scrim').style.display='none'; },
+            add(id) { this.bag[id] = (this.bag[id] || 0) + 1; this.sync(); },
+            setPaxi(f, t, id) { 
+                this.fee = f; this.type = t; 
+                document.querySelectorAll('.paxi-card').forEach(c => c.classList.remove('active'));
+                document.getElementById(id).classList.add('active');
+                this.refreshBag();
+            },
+            sync() { 
+                localStorage.setItem('ob_bag', JSON.stringify(this.bag)); 
+                document.getElementById('bag-count').innerText = Object.values(this.bag).reduce((a,b)=>a+b,0); 
+            },
+            refreshBag() {
+                const l = document.getElementById('bag-list');
+                const e = Object.entries(this.bag);
+                l.innerHTML = e.length ? e.map(([id, q])=>`<div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>#${id} (x${q})</span><b>R${q*20}</b></div>`).join('') : 'Your bag is empty';
+                document.getElementById('total').innerText = `R${Object.values(this.bag).reduce((a,b)=>a+(b*20),0) + this.fee}`;
+            },
             initGSI() {
                 if (typeof google === 'undefined') return;
                 google.accounts.id.initialize({
@@ -81,11 +131,18 @@
             },
             signOut() {
                 const u = JSON.parse(localStorage.getItem('ob_user'));
-                if(u) google.accounts.id.revoke(u.email, () => { console.log('Google Revoked'); });
+                if(u) google.accounts.id.revoke(u.email, () => {});
                 localStorage.removeItem('ob_user');
                 localStorage.setItem('ob_signout_lock', 'true');
                 location.reload();
-            }
+            },
+            renderGrid() {
+                document.getElementById('main-grid').innerHTML = CATALOG.map(p => {
+                    const isCS = p.id === 26;
+                    return `<div class="card ${isCS ? 'coming-soon' : ''}"><img src="${p.id}.jpg"><b>${p.name}</b><button class="pill-btn ${isCS ? 'cs-btn' : ''}" onclick="CORE.add(${p.id})">${isCS ? 'Coming Soon' : 'Add'}</button></div>`;
+                }).join('');
+            },
+            wa() { window.open(`https://wa.me/27000000000?text=Order`); }
         };
 
         function onSignIn(resp) {
@@ -96,10 +153,8 @@
         }
 
         function updateUI(u) {
-            // Header Update
             document.getElementById('head-p').src = u.picture;
             document.getElementById('head-name').innerText = u.given_name;
-            // Sheet Update
             document.getElementById('auth-title').innerText = "Logged In";
             document.getElementById('user-mail').innerText = u.email;
             document.getElementById('g_btn_box').style.display = 'none';
@@ -107,16 +162,11 @@
         }
 
         window.onload = () => {
+            CORE.renderGrid();
+            CORE.sync();
             const lock = localStorage.getItem('ob_signout_lock') === 'true';
             const saved = JSON.parse(localStorage.getItem('ob_user'));
-            
-            // IF SIGNED OUT (LOCKED), FORCE LOGO.JPG
-            if (lock || !saved) {
-                document.getElementById('head-p').src = 'logo.jpg';
-                document.getElementById('head-name').innerText = 'Sign In';
-            } else if (saved) {
-                updateUI(saved);
-            }
+            if (saved && !lock) updateUI(saved);
         };
     </script>
 </body>
