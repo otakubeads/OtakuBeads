@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Otaku Beads | V246 Master</title>
+    <title>Otaku Beads | V247 Restore</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet">
@@ -11,10 +11,19 @@
         :root { --bg: #0F0D13; --card: #1C1921; --prim: #D0BCFF; --on-prim: #381E72; --out: #49454F; }
         body { font-family: 'Outfit', sans-serif; background: var(--bg); color: #E6E1E5; margin: 0; padding-bottom: 120px; }
         header { position: sticky; top: 0; background: rgba(15,13,19,0.85); backdrop-filter: blur(20px); padding: 16px 20px; border-bottom: 1px solid var(--out); z-index: 5000; display: flex; justify-content: space-between; align-items: center; }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; }
+        .card { background: var(--card); border-radius: 28px; overflow: hidden; border: 1px solid var(--out); display: flex; flex-direction: column; min-height: 310px; }
+        .card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
+        .card-content { padding: 10px 14px 14px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .design-name { font-weight: 700; font-size: 13px; margin-bottom: 6px; }
+
         .sheet { position: fixed; inset: 0; z-index: 10000; transform: translateY(100%); background: var(--bg); transition: 0.4s cubic-bezier(0.1, 0.7, 0.1, 1); border-radius: 32px 32px 0 0; padding: 24px; visibility: hidden; overflow-y: auto; }
         .sheet.full { transform: translateY(0); visibility: visible; }
-        .btn-m3 { height: 48px; border-radius: 24px; border: none; font-weight: 700; width: 100%; background: var(--prim); color: var(--on-prim); cursor: pointer; }
-        .m3-card { background: var(--card); border: 1px solid var(--out); border-radius: 24px; padding: 16px; margin-bottom: 16px; }
+        .btn-m3 { height: 48px; border-radius: 24px; border: none; font-weight: 700; width: 100%; background: var(--prim); color: var(--on-prim); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .coming-soon { filter: grayscale(1); opacity: 0.5; pointer-events: none; }
+        
+        #bag-home { position: fixed; bottom: 24px; right: 20px; background: var(--prim); color: var(--on-prim); padding: 16px 24px; border-radius: 28px; z-index: 9999; font-weight: 700; border: none; display: flex; align-items: center; gap: 10px; box-shadow: 0 8px 32px rgba(0,0,0,0.6); }
     </style>
 </head>
 <body>
@@ -25,6 +34,13 @@
         </div>
         <span class="material-symbols-rounded" onclick="UI.open('auth')" style="color:var(--prim); cursor:pointer; font-size:28px;">account_circle</span>
     </header>
+
+    <main id="store-grid" class="grid"></main>
+
+    <button id="bag-home" onclick="UI.open('cart')">
+        <span class="material-symbols-rounded">shopping_bag</span>
+        <span id="bag-count">R0</span>
+    </button>
 
     <div id="auth-sheet" class="sheet">
         <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
@@ -37,42 +53,97 @@
             <div class="g_id_signin" data-type="standard"></div>
         </div>
         <div id="g-profile-box" style="display:none;">
-            <div id="status-dashboard" class="m3-card" style="border-style: dashed; border-color: var(--prim);">
-                <p style="font-size:12px; font-weight:700; color:var(--prim); margin:0 0 10px 0;">SYSTEM STATUS ⚓</p>
+            <div style="background:rgba(208,188,255,0.1); border:1px dashed var(--prim); border-radius:24px; padding:16px; margin-bottom:20px;">
+                <p style="font-size:12px; font-weight:700; color:var(--prim); margin:0 0-10px 0;">SYSTEM STATUS ⚓</p>
                 <div style="display:flex; justify-content:space-between; font-size:13px;"><span>Deployment</span><span style="color:#81C784;">● Active</span></div>
-                <div style="display:flex; justify-content:space-between; font-size:13px; margin:5px 0;"><span>Code</span><span>V246 Master</span></div>
-                <div style="display:flex; justify-content:space-between; font-size:13px;"><span>Engine</span><span>Verified</span></div>
+                <div style="display:flex; justify-content:space-between; font-size:13px; margin:5px 0;"><span>Code</span><span>V247 Restore</span></div>
             </div>
             <button class="btn-m3" style="margin-bottom:12px;" onclick="UI.open('reviews')">Customer Reviews</button>
             <button class="btn-m3" style="background:#333; color:white;" onclick="location.reload()">Sign Out</button>
         </div>
     </div>
 
-    <div id="reviews-sheet" class="sheet">
+    <div id="cart-sheet" class="sheet">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-            <h2 style="margin:0">Reviews</h2>
+            <h2 style="margin:0">Your Bag</h2>
             <span class="material-symbols-rounded" onclick="UI.close()">close</span>
         </div>
-        <div class="m3-card">
-            <p style="margin:0 0 10px 0; font-weight:700;">Leave a Review</p>
-            <textarea id="rev-text" placeholder="Tell us about your beads..." style="width:100%; height:80px; background:var(--bg); border:1px solid var(--out); border-radius:12px; color:white; padding:10px; margin-bottom:12px;"></textarea>
-            <button class="btn-m3" onclick="alert('Review submitted to Google Engine!')">Post Review</button>
+        <div id="cart-list"></div>
+        <div style="background:var(--card); padding:20px; border-radius:24px; border:1px solid var(--out); margin: 24px 0;">
+            <p style="margin:0 0 10px 0; font-weight:700;">Delivery Option</p>
+            <select id="paxi-sel" onchange="ENGINE.updateTotal()" style="width:100%; padding:14px; border-radius:14px; background:var(--bg); color:white; border:1px solid var(--out);">
+                <option value="0">Local Pick-up - R0</option>
+                <option value="60">Paxi Standard - R60</option>
+                <option value="100">Paxi Express - R100</option>
+            </select>
         </div>
-        <div id="reviews-list"></div>
+        <button class="btn-m3" onclick="ENGINE.checkout()">WhatsApp Order</button>
     </div>
 
     <script>
         const UI = {
-            open(id) { document.getElementById(id+'-sheet').classList.add('full'); },
+            open(id) { if(id==='cart') ENGINE.sync(); document.getElementById(id+'-sheet').classList.add('full'); },
             close() { document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('full')); }
         };
+
+        const ENGINE = {
+            bag: {},
+            db: [],
+            async init() {
+                try {
+                    const res = await fetch('names.json?v=' + Date.now());
+                    this.db = await res.json();
+                } catch(e) { 
+                    // Fallback to manual list if JSON fails [cite: 2026-01-27, 2026-01-29]
+                    this.db = Array.from({length: 28}, (_, i) => `${i + 1}.jpg`);
+                }
+                this.render();
+            },
+            render() {
+                const grid = document.getElementById('store-grid');
+                grid.innerHTML = this.db.map(n => {
+                    const isSoon = n.includes('26');
+                    const price = n.toLowerCase().includes('keychain') ? 50 : 40;
+                    const cleanName = n.replace('.jpg','').split('_').join(' ');
+                    return `
+                    <div class="card ${isSoon ? 'coming-soon' : ''}">
+                        <img src="${n}" onerror="this.src='coming soon1.jpeg'">
+                        <div class="card-content">
+                            <div class="design-name">Design ${cleanName}</div>
+                            <button class="btn-m3" ${isSoon ? 'disabled' : ''} onclick="ENGINE.add('${n}', ${price})">
+                                ${isSoon ? 'Coming Soon' : 'Add - R' + price}
+                            </button>
+                        </div>
+                    </div>`;
+                }).join('');
+            },
+            add(n, p) { this.bag[n] = (this.bag[n] || 0) + 1; this.updateTotal(); },
+            updateTotal() {
+                let sub = 0;
+                Object.keys(this.bag).forEach(k => {
+                    const p = k.toLowerCase().includes('keychain') ? 50 : 40;
+                    sub += p * this.bag[k];
+                });
+                const ship = parseInt(document.getElementById('paxi-sel').value);
+                document.getElementById('bag-count').innerText = 'R' + (sub + ship);
+            },
+            sync() {
+                const list = document.getElementById('cart-list');
+                const keys = Object.keys(this.bag);
+                list.innerHTML = keys.length ? keys.map(k => `
+                    <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--out);">
+                        <span>${k.replace('.jpg','').split('_').join(' ')}</span><b>x${this.bag[k]}</b>
+                    </div>`).join('') : "<p style='text-align:center; opacity:0.5;'>Bag is empty</p>";
+            },
+            checkout() { /* WhatsApp logic */ }
+        };
+
         function handleAuth(r) {
-            const user = JSON.parse(atob(r.credential.split('.')[1]));
             document.getElementById('g-login-box').style.display = 'none';
             document.getElementById('g-profile-box').style.display = 'block';
         }
-        // Auto-Heal & Deployment Monitoring [cite: 2026-01-29, 2026-01-30]
-        window.onload = () => console.log("Otaku Brain V246 Active ⚓");
+
+        window.onload = () => ENGINE.init();
     </script>
 </body>
 </html>
