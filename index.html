@@ -3,47 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Otaku Beads | Live</title>
+    <title>Otaku Beads | Official Store</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet">
     <style>
         :root { --bg: #0F0D13; --card: #1C1921; --prim: #D0BCFF; --acc: #B2FF59; --txt: #E6E1E5; --out: #49454F; }
         body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding-bottom: 120px; }
         
-        .profile-btn { position: absolute; top: 24px; right: 24px; width: 48px; height: 48px; border-radius: 50%; background: var(--card); border: 1px solid var(--out); overflow: hidden; z-index: 1001; }
-        .profile-btn img { width: 100%; height: 100%; object-fit: cover; }
+        .promo-banner { background: #381E72; color: var(--prim); padding: 10px; font-size: 13px; font-weight: 700; text-align: center; border-bottom: 1px solid var(--out); letter-spacing: 0.5px; }
 
-        .header { text-align: center; padding: 60px 20px 20px; }
+        .profile-btn { position: absolute; top: 58px; right: 20px; width: 44px; height: 44px; border-radius: 50%; background: var(--card); border: 1px solid var(--out); overflow: hidden; z-index: 1001; }
+        .profile-btn img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .header { text-align: center; padding: 40px 20px 20px; }
         .header h1 { font-size: 38px; margin: 0; background: linear-gradient(to right, #D0BCFF, #B2FF59); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px; }
         .card { background: var(--card); border-radius: 32px; padding: 8px; border: 1px solid var(--out); }
-        .card img { width: 100%; aspect-ratio: 1; border-radius: 28px; object-fit: cover; }
-
+        .card img { width: 100%; aspect-ratio: 1; border-radius: 28px; object-fit: cover; background: #222; }
+        
         .sheet { position: fixed; inset: 0; z-index: 9999; transform: translateY(100%); background: #1C1921; transition: 0.5s cubic-bezier(0.3, 0, 0, 1); border-radius: 40px 40px 0 0; padding: 32px; display: flex; flex-direction: column; }
         .sheet.full { transform: translateY(0); }
-
-        .fab { position: fixed; bottom: 24px; left: 24px; right: 24px; height: 64px; background: var(--prim); color: #381E72; border-radius: 32px; display: flex; align-items: center; justify-content: center; font-weight: 700; border: none; z-index: 1000; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
-        #scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; z-index: 9000; }
+        .sheet-handle { width: 40px; height: 5px; background: var(--out); border-radius: 10px; margin: 0 auto 24px; flex-shrink: 0; }
+        .close-trigger { position: absolute; top: 24px; right: 24px; color: var(--txt); font-size: 28px; }
+        
+        .fab { height: 64px; background: var(--prim); color: #381E72; border-radius: 32px; display: flex; align-items: center; justify-content: center; font-weight: 700; border: none; font-size: 16px; cursor: pointer; }
+        .fixed-fab { position: fixed; bottom: 24px; left: 24px; right: 24px; z-index: 1000; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .btn-disabled { background: #353239 !important; color: #757575 !important; cursor: not-allowed; }
+        #scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: none; z-index: 9000; }
     </style>
 </head>
 <body>
     <div id="scrim" onclick="CORE.close()"></div>
+    
+    <div class="promo-banner">ENDING TODAY: B2G1 FREE & FREE SHIPPING OVER R500</div>
+    
     <div class="profile-btn" onclick="CORE.open('auth')"><img id="u-p" src="logo.jpg"></div>
-
     <div class="header"><h1>Otaku Beads</h1></div>
+    
     <main class="grid" id="cat"></main>
 
-    <button class="fab" onclick="CORE.open('bag')">Open Bag • <span id="f-t">R0</span></button>
+    <button class="fab fixed-fab" onclick="CORE.open('bag')">Open Bag • <span id="f-t">R0</span></button>
 
     <div id="auth-sheet" class="sheet">
-        <div style="width:40px; height:5px; background:var(--out); border-radius:10px; margin:0 auto 32px;"></div>
-        <h2 style="text-align:center;">Account</h2>
+        <div class="sheet-handle"></div>
+        <span class="material-symbols-rounded close-trigger" onclick="CORE.close()">close</span>
+        <h2 style="text-align:center;">Your Account</h2>
         <div id="g_btn" style="display:flex; justify-content:center; margin-top:40px;"></div>
         <div id="u-d" style="display:none; text-align:center; margin-top:20px;">
-            <p id="u-e"></p>
-            <button class="fab" style="position:static; width:100%; background:#442B2B; color:#F2B8B5;" onclick="CORE.out()">Sign Out</button>
+            <p id="u-e" style="opacity:0.6; margin-bottom:24px;"></p>
+            <button class="fab" style="width:100%; background:#442B2B; color:#F2B8B5;" onclick="CORE.out()">Sign Out</button>
         </div>
+    </div>
+
+    <div id="bag-sheet" class="sheet">
+        <div class="sheet-handle"></div>
+        <h2 style="font-size:32px;">Your Bag</h2>
+        <div id="bag-list" style="flex-grow:1; overflow-y:auto; margin:16px 0;"></div>
+        <button class="fab" style="width:100%;">Pay with PayFast</button>
+        <button onclick="CORE.close()" style="margin-top:16px; background:transparent; color:white; border:none; font-weight:700;">Back to Shop</button>
     </div>
 
     <script>
@@ -52,25 +71,36 @@
             open(id) {
                 document.getElementById(id + '-sheet').classList.add('full');
                 document.getElementById('scrim').style.display = 'block';
+                if(id === 'bag') this.renderBag();
                 if(id === 'auth') this.initGSI();
             },
             close() {
                 document.querySelectorAll('.sheet').forEach(s => s.classList.remove('full'));
                 document.getElementById('scrim').style.display = 'none';
             },
-            add(id) { 
-                this.bag[id] = (this.bag[id] || 0) + 1; 
+            add(id) {
+                if(id === 26) return;
+                this.bag[id] = (this.bag[id] || 0) + 1;
                 localStorage.setItem('ob_bag', JSON.stringify(this.bag));
                 this.updateTotal();
             },
             updateTotal() {
                 const count = Object.values(this.bag).reduce((a,b)=>a+b,0);
-                const sub = count * 20;
-                const disc = Math.floor(count/3) * 20;
-                document.getElementById('f-t').innerText = `R${(sub-disc)+60}`;
+                const total = (count * 20) - (Math.floor(count/3) * 20);
+                document.getElementById('f-t').innerText = count > 0 ? `R${total + 60}` : 'R0';
+            },
+            renderBag() {
+                const list = document.getElementById('bag-list');
+                const entries = Object.entries(this.bag);
+                list.innerHTML = entries.length ? entries.map(([id, q]) => `
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; padding:10px; background:rgba(255,255,255,0.03); border-radius:20px;">
+                        <img src="${id}.jpg" style="width:40px; height:40px; border-radius:10px;" onerror="this.src='logo.jpg'">
+                        <div style="flex-grow:1;">Design #${id}</div>
+                        <b>x${q}</b>
+                    </div>
+                `).join('') : '<div style="text-align:center; opacity:0.5; margin-top:40px;">Bag is empty</div>';
             },
             initGSI() {
-                if (typeof google === 'undefined') return;
                 google.accounts.id.initialize({
                     client_id: "919544111369-2hhnhfnsc0hvrgnq1dn8fjc8ca3im7jv.apps.googleusercontent.com",
                     callback: (r) => {
@@ -79,6 +109,13 @@
                     }
                 });
                 google.accounts.id.renderButton(document.getElementById("g_btn"), { theme: "filled_black", shape: "pill" });
+                const u = JSON.parse(localStorage.getItem('ob_user'));
+                if(u) {
+                    document.getElementById('u-p').src = u.picture;
+                    document.getElementById('g_btn').style.display = 'none';
+                    document.getElementById('u-d').style.display = 'block';
+                    document.getElementById('u-e').innerText = u.email;
+                }
             },
             out() { localStorage.removeItem('ob_user'); location.reload(); }
         };
@@ -86,14 +123,14 @@
         window.onload = () => {
             const cat = document.getElementById('cat');
             for(let i=1; i<=28; i++) {
-                cat.innerHTML += `<div class="card"><img src="${i}.jpg" onerror="this.src='logo.jpg'"><div style="padding:12px;"><button class="fab" style="position:static; height:40px; font-size:14px; width:100%; border-radius:12px;" onclick="CORE.add(${i})">Add</button></div></div>`;
-            }
-            const u = JSON.parse(localStorage.getItem('ob_user'));
-            if(u) {
-                document.getElementById('u-p').src = u.picture;
-                document.getElementById('g_btn').style.display = 'none';
-                document.getElementById('u-d').style.display = 'block';
-                document.getElementById('u-e').innerText = u.email;
+                const is26 = i === 26;
+                cat.innerHTML += `
+                <div class="card" style="${is26 ? 'opacity:0.5' : ''}">
+                    <img src="${i}.jpg" onerror="this.src='logo.jpg'">
+                    <button class="fab ${is26 ? 'btn-disabled' : ''}" style="height:44px; width:100%; border-radius:16px; margin-top:8px; font-size:14px;" onclick="CORE.add(${i})">
+                        ${is26 ? 'Coming Soon' : 'Add to Bag'}
+                    </button>
+                </div>`;
             }
             CORE.updateTotal();
         };
