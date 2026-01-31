@@ -1,0 +1,14 @@
+/* PREVENT BACKGROUND JUMP ON MENU OPEN */
+body.modal-open {
+    overflow: hidden;
+    padding-right: 15px; /* Compels scrollbar gutter to stay put */
+}
+
+/* M3 EXPRESSIVE TOUCH TARGETS [cite: 2026-01-29] */
+.qty-btn {
+    min-width: 40px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
