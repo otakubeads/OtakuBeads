@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Otaku Beads | V186</title>
+    <title>Otaku Beads | V188</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet">
     <style>
@@ -21,10 +21,12 @@
         .card.is-soon { opacity: 0.6; filter: grayscale(1); }
         
         .badge { align-self: flex-start; padding: 4px 10px; border-radius: 8px; background: var(--sec); font-size: 10px; color: var(--prim); text-transform: uppercase; margin: 8px 0 4px; font-weight: 700; }
-        .title { font-weight: 700; font-size: 15px; margin-bottom: 12px; text-transform: capitalize; }
+        .info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .title { font-weight: 700; font-size: 16px; text-transform: capitalize; letter-spacing: 0.2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .price { font-weight: 700; color: var(--prim); font-size: 15px; }
         
-        .btn-m3 { height: 44px; border-radius: 22px; border: none; font-weight: 700; width: 100%; cursor: pointer; background: var(--prim); color: var(--on-prim); }
-        .btn-m3.disabled { background: var(--out); color: #938F99; }
+        .btn-m3 { height: 44px; border-radius: 22px; border: none; font-weight: 700; width: 100%; cursor: pointer; background: var(--prim); color: var(--on-prim); font-family: 'Outfit'; }
+        .btn-m3.disabled { background: var(--out); color: #938F99; cursor: not-allowed; }
 
         .sheet { position: fixed; inset: 0; z-index: 9999; transform: translateY(100%); background: var(--card); transition: 0.5s cubic-bezier(0.3, 0, 0, 1); border-radius: 32px 32px 0 0; padding: 24px; }
         .sheet.full { transform: translateY(0); }
@@ -63,18 +65,22 @@
             render() {
                 document.getElementById('cat').innerHTML = this.items.map(name => {
                     const isPlaceholder = name.toLowerCase().includes('soon');
+                    const isKeychain = name.toLowerCase().includes('keychain');
                     
-                    // Logic to strip redundant "Bracelet" or "Keychain" from the title [cite: 2026-01-31]
                     let cleanTitle = name.replace(/_/g, ' ').replace(/bracelet/gi, '').replace(/keychain/gi, '').trim();
                     if (isPlaceholder) cleanTitle = "Design #26";
                     
-                    const badgeText = isPlaceholder ? "Coming Soon" : (name.toLowerCase().includes('keychain') ? 'Keychain' : 'Bracelet');
+                    const price = isKeychain ? "R50" : "R40";
+                    const badgeText = isPlaceholder ? "Coming Soon" : (isKeychain ? 'Keychain' : 'Bracelet');
                     
                     return `
                     <div class="card ${isPlaceholder ? 'is-soon' : ''}">
                         <img src="${name}.jpg" onerror="this.src='${name}.jpeg'; this.onerror=()=>this.src='coming soon1.jpeg'">
                         <div class="badge">${badgeText}</div>
-                        <div class="title">${cleanTitle}</div>
+                        <div class="info-row">
+                            <div class="title">${cleanTitle}</div>
+                            ${!isPlaceholder ? `<div class="price">${price}</div>` : ''}
+                        </div>
                         <button class="btn-m3 ${isPlaceholder ? 'disabled' : ''}" 
                                 ${isPlaceholder ? 'disabled' : `onclick="CORE.open('cart')"`}>
                             ${isPlaceholder ? 'Locked' : 'Add to Bag'}
