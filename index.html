@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>Otaku Beads | Live</title>
+    <title>Otaku Beads | Auth V113</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet">
@@ -27,9 +27,6 @@
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; padding-bottom: 120px; }
         .card { background: var(--container); border-radius: 24px; padding: 12px; border: 1px solid var(--outline); text-align: center; }
         .card img { width: 100%; aspect-ratio: 1; border-radius: 16px; object-fit: cover; margin-bottom: 8px; }
-
-        .coming-soon { opacity: 0.5; filter: grayscale(1); pointer-events: none; }
-        .cs-btn { background: #49454F !important; color: #938F99 !important; border: none !important; }
 
         .sheet { position: fixed; inset: 0; z-index: 9999; transform: translateY(100%); background: #2D2933; transition: 0.4s var(--bez); border-radius: 28px 28px 0 0; padding: 24px; display: flex; flex-direction: column; }
         .sheet.open { transform: translateY(0); }
@@ -59,24 +56,32 @@
     <main class="grid" id="main-grid"></main>
     <button class="fab" onclick="CORE.open('bag')">Bag (<span id="bag-count">0</span>)</button>
 
+    <div id="auth-sheet" class="sheet">
+        <div class="handle"></div>
+        <div style="text-align:center;">
+            <h2 style="margin-bottom:16px;">Welcome Back</h2>
+            <div id="g_btn" style="display:flex; justify-content:center; margin-top:20px;"></div>
+            <button class="pill-btn" onclick="CORE.close()" style="margin-top:40px;">Back</button>
+        </div>
+    </div>
+
     <div id="bag-sheet" class="sheet">
         <div class="handle"></div>
         <h2>Checkout</h2>
         <div id="bag-list" style="flex-grow:1; overflow-y:auto; margin-top:16px;"></div>
         <div class="paxi-section">
             <div class="paxi-card active" id="px-s" onclick="CORE.setPaxi(60, 'Standard', 'px-s')">
-                <div><b>Paxi Standard</b><br><small>7-9 Days</small></div><b>R60</b>
+                <div><b>Standard</b><br><small>7-9 Days</small></div><b>R60</b>
             </div>
             <div class="paxi-card" id="px-e" onclick="CORE.setPaxi(100, 'Express', 'px-e')">
-                <div><b>Paxi Express</b><br><small>3-5 Days</small></div><b>R100</b>
+                <div><b>Express</b><br><small>3-5 Days</small></div><b>R100</b>
             </div>
         </div>
         <div style="margin:20px 0; text-align:center;"><span id="total" style="font-size:32px; font-weight:700; color:var(--primary);">R0</span></div>
-        <button class="pill-btn primary-btn" onclick="CORE.wa()">WhatsApp Order</button>
+        <button class="pill-btn primary-btn" onclick="CORE.wa()">Order via WhatsApp</button>
         <button class="pill-btn" onclick="CORE.close()">Close</button>
     </div>
 
-    <div id="auth-sheet" class="sheet"><div class="handle"></div><div id="g_id_onload" data-client_id="YOUR_ID" data-callback="onSignIn"></div><div class="g_id_signin" data-type="standard"></div><button class="pill-btn" onclick="CORE.close()">Close</button></div>
     <div id="menu-sheet" class="sheet"><div class="handle"></div><h2>Collections</h2><button class="pill-btn" onclick="CORE.close()">Close</button></div>
 
     <script>
@@ -84,7 +89,12 @@
         const CORE = {
             bag: JSON.parse(localStorage.getItem('ob_bag') || '{}'),
             fee: 60, type: 'Standard',
-            open(id) { document.getElementById(id+'-sheet').classList.add('open'); document.getElementById('scrim').style.display='block'; if(id==='bag') this.refresh(); },
+            open(id) { 
+                document.getElementById(id+'-sheet').classList.add('open'); 
+                document.getElementById('scrim').style.display='block'; 
+                if(id==='bag') this.refresh();
+                if(id==='auth') this.initGSI();
+            },
             close() { document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('open')); document.getElementById('scrim').style.display='none'; },
             add(id) { this.bag[id] = (this.bag[id] || 0) + 1; this.sync(); },
             setPaxi(f, t, id) { 
@@ -103,12 +113,27 @@
             render() {
                 document.getElementById('main-grid').innerHTML = CATALOG.map(p => {
                     const isCS = p.id === 26;
-                    return `<div class="card ${isCS ? 'coming-soon' : ''}"><img src="${p.id}.jpg"><b>${p.name}</b><button class="pill-btn ${isCS ? 'cs-btn' : ''}" onclick="CORE.add(${p.id})">${isCS ? 'Coming Soon' : 'Add'}</button></div>`;
+                    return `<div class="card ${isCS ? 'coming-soon' : ''}"><img src="${p.id}.jpg"><b>${p.name}</b><button class="pill-btn" onclick="CORE.add(${p.id})">${isCS ? 'Coming Soon' : 'Add'}</button></div>`;
                 }).join('');
+            },
+            initGSI() {
+                google.accounts.id.initialize({
+                    client_id: "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
+                    callback: onSignIn,
+                    auto_select: false,
+                    itp_support: true
+                });
+                google.accounts.id.renderButton(document.getElementById("g_btn"), { theme: "filled_black", size: "large", shape: "pill" });
             },
             wa() { window.open(`https://wa.me/27000000000?text=Order`); }
         };
-        function onSignIn(r) { const u = JSON.parse(atob(r.credential.split('.')[1])); document.getElementById('head-p').src = u.picture; document.getElementById('head-name').innerText = u.given_name; CORE.close(); }
+
+        function onSignIn(resp) {
+            const u = JSON.parse(atob(resp.credential.split('.')[1]));
+            document.getElementById('head-p').src = u.picture;
+            document.getElementById('head-name').innerText = u.given_name;
+            CORE.close();
+        }
         window.onload = () => { CORE.render(); CORE.sync(); };
     </script>
 </body>
