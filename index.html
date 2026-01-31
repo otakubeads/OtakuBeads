@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>Otaku Beads | Secure</title>
+    <title>Otaku Beads | Final Auth</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet">
@@ -24,16 +24,12 @@
         .auth-trigger { display: flex; align-items: center; gap: 8px; background: var(--container); padding: 4px; border-radius: 20px; border: 1px solid var(--outline); cursor: pointer; }
         .auth-trigger img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
         
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; padding-bottom: 120px; }
-        .card { background: var(--container); border-radius: 24px; padding: 12px; border: 1px solid var(--outline); }
-        .card img { width: 100%; aspect-ratio: 1; border-radius: 16px; object-fit: cover; margin-bottom: 8px; }
-
         .sheet { position: fixed; inset: 0; z-index: 9999; transform: translateY(100%); background: #2D2933; transition: 0.4s var(--bez); border-radius: 28px 28px 0 0; padding: 24px; display: flex; flex-direction: column; }
         .sheet.open { transform: translateY(0); }
         .handle { width: 32px; height: 4px; background: var(--outline); border-radius: 2px; margin: 0 auto 24px; flex-shrink: 0; }
         
         .pill-btn { border: 1px solid var(--outline); color: var(--on-surf); background: transparent; padding: 14px; border-radius: 28px; width: 100%; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; margin-top: 10px; }
-        .out-btn { border: 1px solid var(--error); color: var(--error); margin-top: 20px; font-weight: 700; }
+        .out-btn { background: #442B2B; color: var(--error); border: 1px solid #603F3F; margin-top: 20px; font-weight: 700; }
 
         #scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9000; display: none; backdrop-filter: blur(4px); }
     </style>
@@ -49,8 +45,6 @@
         </div>
     </header>
 
-    <main class="grid" id="main-grid"></main>
-
     <div id="auth-sheet" class="sheet">
         <div class="handle"></div>
         <div style="text-align:center;">
@@ -58,7 +52,7 @@
             <div id="g_btn" style="display:flex; justify-content:center; margin-top:20px;"></div>
             <div id="user-info" style="display:none; margin-top:20px;">
                 <p id="user-mail" style="opacity:0.7; margin-bottom:10px;"></p>
-                <button class="pill-btn out-btn" onclick="CORE.signOut()">Sign Out</button>
+                <button class="pill-btn out-btn" onclick="CORE.signOut()">SIGN OUT</button>
             </div>
             <button class="pill-btn" onclick="CORE.close()" style="margin-top:20px;">Close</button>
         </div>
@@ -67,8 +61,6 @@
     <div id="menu-sheet" class="sheet"><div class="handle"></div><h2>Menu</h2><button class="pill-btn" onclick="CORE.close()">Close</button></div>
 
     <script>
-        const CATALOG = Array.from({length: 28}, (_, i) => ({ id: i + 1, name: `Design #${i+1}` }));
-        
         const CORE = {
             open(id) { 
                 document.getElementById(id+'-sheet').classList.add('open'); 
@@ -86,44 +78,34 @@
             },
             signOut() {
                 const u = JSON.parse(localStorage.getItem('ob_user'));
-                if(u) google.accounts.id.revoke(u.email, () => {});
+                if(u) google.accounts.id.revoke(u.email, () => { console.log('Google Revoked'); });
                 localStorage.removeItem('ob_user');
-                localStorage.setItem('ob_signout_lock', 'true'); // HARD LOCK
+                localStorage.setItem('ob_lock', 'true');
                 location.reload();
-            },
-            render() {
-                document.getElementById('main-grid').innerHTML = CATALOG.map(p => `
-                    <div class="card">
-                        <img src="${p.id}.jpg">
-                        <b>${p.name}</b>
-                        <button class="pill-btn">Add</button>
-                    </div>
-                `).join('');
-                
-                // RESTORE ONLY IF NO LOCK
-                const isLocked = localStorage.getItem('ob_signout_lock') === 'true';
-                const saved = JSON.parse(localStorage.getItem('ob_user'));
-                if(saved && !isLocked) updateUI(saved);
             }
         };
 
         function onSignIn(resp) {
             const u = JSON.parse(atob(resp.credential.split('.')[1]));
             localStorage.setItem('ob_user', JSON.stringify(u));
-            localStorage.removeItem('ob_signout_lock'); // UNLOCK
+            localStorage.removeItem('ob_lock');
             updateUI(u);
         }
 
         function updateUI(u) {
             document.getElementById('head-p').src = u.picture;
             document.getElementById('head-name').innerText = u.given_name;
-            document.getElementById('auth-title').innerText = "Hi, " + u.given_name;
+            document.getElementById('auth-title').innerText = "Logged In";
             document.getElementById('user-mail').innerText = u.email;
             document.getElementById('g_btn').style.display = 'none';
             document.getElementById('user-info').style.display = 'block';
         }
 
-        window.onload = CORE.render;
+        window.onload = () => {
+            const saved = JSON.parse(localStorage.getItem('ob_user'));
+            const lock = localStorage.getItem('ob_lock');
+            if(saved && lock !== 'true') updateUI(saved);
+        };
     </script>
 </body>
 </html>
