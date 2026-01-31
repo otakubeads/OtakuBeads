@@ -3,35 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Otaku Beads | V185</title>
+    <title>Otaku Beads | V186</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet">
     <style>
         :root { --bg: #0F0D13; --card: #1C1921; --prim: #D0BCFF; --on-prim: #381E72; --sec: #4A4458; --out: #49454F; }
-        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: #E6E1E5; margin: 0; padding-bottom: 120px; -webkit-font-smoothing: antialiased; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: #E6E1E5; margin: 0; padding-bottom: 120px; }
         
-        /* M3 Dynamic Header */
-        header { position: sticky; top: 0; background: rgba(15,13,19,0.85); backdrop-filter: blur(20px); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 100; border-bottom: 1px solid var(--out); }
-        .logo-box { width: 42px; height: 42px; border-radius: 12px; overflow: hidden; border: 1px solid var(--out); }
+        header { position: sticky; top: 0; background: rgba(15,13,19,0.9); backdrop-filter: blur(20px); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 100; border-bottom: 1px solid var(--out); }
+        .logo-box { width: 40px; height: 40px; border-radius: 12px; overflow: hidden; border: 1px solid var(--out); }
         .logo-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Grid Architecture */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; }
-        .card { background: var(--card); border-radius: 28px; padding: 12px; border: 1px solid var(--out); position: relative; display: flex; flex-direction: column; }
+        .card { background: var(--card); border-radius: 28px; padding: 12px; border: 1px solid var(--out); display: flex; flex-direction: column; }
         .card img { width: 100%; aspect-ratio: 1; border-radius: 20px; object-fit: cover; background: #222; }
         
-        /* Logic Styling for Placeholders [cite: 2026-01-31] */
-        .card.is-soon { opacity: 0.6; filter: saturate(0.5); }
+        .card.is-soon { opacity: 0.6; filter: grayscale(1); }
         
-        .badge { align-self: flex-start; padding: 4px 10px; border-radius: 8px; background: var(--sec); font-size: 10px; color: var(--prim); text-transform: uppercase; margin: 8px 0 4px; font-weight: 700; letter-spacing: 0.5px; }
-        .title { font-weight: 700; font-size: 13px; margin-bottom: 12px; text-transform: capitalize; color: #E6E1E5; }
+        .badge { align-self: flex-start; padding: 4px 10px; border-radius: 8px; background: var(--sec); font-size: 10px; color: var(--prim); text-transform: uppercase; margin: 8px 0 4px; font-weight: 700; }
+        .title { font-weight: 700; font-size: 15px; margin-bottom: 12px; text-transform: capitalize; }
         
-        /* M3 Primary Buttons */
-        .btn-m3 { height: 44px; border-radius: 22px; border: none; font-weight: 700; width: 100%; cursor: pointer; background: var(--prim); color: var(--on-prim); font-family: 'Outfit'; }
-        .btn-m3.disabled { background: var(--out); color: #938F99; cursor: not-allowed; }
+        .btn-m3 { height: 44px; border-radius: 22px; border: none; font-weight: 700; width: 100%; cursor: pointer; background: var(--prim); color: var(--on-prim); }
+        .btn-m3.disabled { background: var(--out); color: #938F99; }
 
-        /* Paxi Section #X [cite: 2026-01-29] */
-        .sheet { position: fixed; inset: 0; z-index: 9999; transform: translateY(100%); background: var(--card); transition: 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); border-radius: 32px 32px 0 0; padding: 24px; }
+        .sheet { position: fixed; inset: 0; z-index: 9999; transform: translateY(100%); background: var(--card); transition: 0.5s cubic-bezier(0.3, 0, 0, 1); border-radius: 32px 32px 0 0; padding: 24px; }
         .sheet.full { transform: translateY(0); }
     </style>
 </head>
@@ -39,26 +34,20 @@
     <header>
         <div style="display:flex; align-items:center; gap:12px;">
             <div class="logo-box"><img src="logo.jpg"></div>
-            <h1 style="font-size:18px; margin:0; font-weight:700;">Otaku Beads</h1>
+            <h1 style="font-size:18px; margin:0;">Otaku Beads</h1>
         </div>
-        <span class="material-symbols-rounded" onclick="CORE.open('cart')" style="color:var(--prim); font-size:28px;">shopping_bag</span>
+        <span class="material-symbols-rounded" onclick="CORE.open('cart')" style="color:var(--prim)">shopping_bag</span>
     </header>
 
     <main id="cat" class="grid"></main>
 
     <div id="cart-sheet" class="sheet">
-        <div style="width:36px; height:4px; background:var(--out); border-radius:10px; margin:0 auto 24px;"></div>
-        <h2 style="margin:0 0 8px;">Delivery Details</h2>
-        <p style="margin:0 0 20px; font-size:14px; opacity:0.7;">Select your preferred shipping method.</p>
-        
-        <div style="background:var(--sec); padding:16px; border-radius:20px; border:2px solid var(--prim);">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-weight:700;">Paxi Express (Section #X)</span>
-                <span style="color:var(--prim); font-weight:700;">R100</span>
-            </div>
-            <div style="font-size:12px; margin-top:4px;">7-9 Days • Pep to Pep Store</div>
+        <div style="width:32px; height:4px; background:var(--out); border-radius:10px; margin:0 auto 20px;"></div>
+        <h2 style="margin-bottom:16px;">Delivery (Section #X)</h2>
+        <div style="background:var(--sec); padding:16px; border-radius:16px; border:2px solid var(--prim);">
+            <div style="font-weight:700;">Paxi Express</div>
+            <div style="font-size:12px;">Pep Store Pickup • R100</div>
         </div>
-        
         <button class="btn-m3" style="margin-top:auto; height:56px; border-radius:28px;" onclick="CORE.close()">Close</button>
     </div>
 
@@ -69,19 +58,23 @@
                     const res = await fetch('names.json?v=' + Date.now());
                     this.items = await res.json();
                     this.render();
-                } catch(e) { console.error("Sync Error: Verify names.json in Termux"); }
+                } catch(e) { console.error("Sync error"); }
             },
             render() {
                 document.getElementById('cat').innerHTML = this.items.map(name => {
                     const isPlaceholder = name.toLowerCase().includes('soon');
-                    const titleText = isPlaceholder ? "Design #26" : name.replace(/_/g, ' ');
-                    const badgeText = isPlaceholder ? "Coming Soon" : (name.includes('keychain') ? 'Keychain' : 'Bracelet');
+                    
+                    // Logic to strip redundant "Bracelet" or "Keychain" from the title [cite: 2026-01-31]
+                    let cleanTitle = name.replace(/_/g, ' ').replace(/bracelet/gi, '').replace(/keychain/gi, '').trim();
+                    if (isPlaceholder) cleanTitle = "Design #26";
+                    
+                    const badgeText = isPlaceholder ? "Coming Soon" : (name.toLowerCase().includes('keychain') ? 'Keychain' : 'Bracelet');
                     
                     return `
                     <div class="card ${isPlaceholder ? 'is-soon' : ''}">
                         <img src="${name}.jpg" onerror="this.src='${name}.jpeg'; this.onerror=()=>this.src='coming soon1.jpeg'">
                         <div class="badge">${badgeText}</div>
-                        <div class="title">${titleText}</div>
+                        <div class="title">${cleanTitle}</div>
                         <button class="btn-m3 ${isPlaceholder ? 'disabled' : ''}" 
                                 ${isPlaceholder ? 'disabled' : `onclick="CORE.open('cart')"`}>
                             ${isPlaceholder ? 'Locked' : 'Add to Bag'}
