@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Otaku Beads | V157</title>
+    <title>Otaku Beads | V158 Restore</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet">
@@ -12,28 +12,30 @@
         body { font-family: 'Outfit', sans-serif; background: var(--bg); color: #E6E1E5; margin: 0; padding-top: 130px; }
         
         .header-fixed { position: fixed; top: 0; left: 0; right: 0; background: rgba(15, 13, 19, 0.95); backdrop-filter: blur(20px); z-index: 2000; padding: 10px 20px; border-bottom: 1px solid var(--out); }
-        .search-bar { background: var(--sec-cont); border-radius: 24px; padding: 8px 16px; display: flex; align-items: center; margin-top: 10px; }
+        .search-bar { background: var(--sec-cont); border-radius: 24px; padding: 8px 16px; display: flex; align-items: center; margin-top: 10px; border: 1px solid transparent; }
+        .search-bar:focus-within { border-color: var(--prim); }
         .search-bar input { background: none; border: none; color: white; margin-left: 8px; width: 100%; outline: none; }
         
-        .filter-bar { display: flex; gap: 8px; padding: 12px 20px; position: fixed; top: 110px; left: 0; right: 0; background: var(--bg); z-index: 1000; overflow-x: auto; }
-        .chip { padding: 6px 16px; border-radius: 16px; border: 1px solid var(--out); font-size: 12px; white-space: nowrap; }
+        .filter-bar { display: flex; gap: 8px; padding: 12px 20px; position: fixed; top: 110px; left: 0; right: 0; background: var(--bg); z-index: 1000; overflow-x: auto; scrollbar-width: none; }
+        .chip { padding: 6px 16px; border-radius: 16px; border: 1px solid var(--out); font-size: 12px; white-space: nowrap; cursor: pointer; transition: 0.3s; }
         .chip.active { background: var(--prim); color: var(--on-prim); border-color: var(--prim); }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; }
-        .badge { display: inline-block; padding: 2px 8px; border-radius: 8px; background: var(--sec-cont); font-size: 10px; color: var(--prim); text-transform: uppercase; margin-bottom: 4px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; min-height: 200px; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 8px; background: var(--sec-cont); font-size: 10px; color: var(--prim); text-transform: uppercase; margin-bottom: 4px; font-weight: 700; }
 
         .sheet { position: fixed; inset: 0; z-index: 9999; transform: translateY(100%); background: #1C1921; transition: 0.5s cubic-bezier(0.3, 0, 0, 1); border-radius: 32px 32px 0 0; padding: 24px; display: flex; flex-direction: column; }
         .sheet.full { transform: translateY(0); }
-        .btn-m3 { height: 56px; border-radius: 28px; border: none; font-weight: 700; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .btn-m3 { height: 56px; border-radius: 28px; border: none; font-weight: 700; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.1s; }
+        .btn-m3:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
-    <div id="scrim" style="position:fixed; inset:0; background:rgba(0,0,0,0.8); display:none; z-index:9000;" onclick="CORE.close()"></div>
+    <div id="scrim" style="position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter: blur(8px); display:none; z-index:9000;" onclick="CORE.close()"></div>
     
     <header class="header-fixed">
         <div style="display:flex; justify-content:space-between; align-items:center;">
             <h1 style="font-size:20px; margin:0;">Otaku Beads</h1>
-            <div style="width:36px; height:36px; border-radius:50%; overflow:hidden; border:1px solid var(--out);" onclick="CORE.open('auth')">
+            <div id="u-trigger" style="width:36px; height:36px; border-radius:50%; overflow:hidden; border:1px solid var(--out); cursor:pointer;" onclick="CORE.open('auth')">
                 <img id="u-p-nav" src="logo.jpg" style="width:100%; height:100%; object-fit:cover;">
             </div>
         </div>
@@ -51,19 +53,31 @@
 
     <main id="cat" class="grid"></main>
 
-    <button class="btn-m3" style="position:fixed; bottom:24px; left:24px; right:24px; width:calc(100% - 48px); background:var(--prim); color:var(--on-prim); z-index:1000;" onclick="CORE.open('bag')">
-        Bag • <span id="f-t">R0</span>
+    <button class="btn-m3" style="position:fixed; bottom:24px; left:24px; right:24px; width:calc(100% - 48px); background:var(--prim); color:var(--on-prim); z-index:1000; box-shadow: 0 4px 20px rgba(0,0,0,0.5);" onclick="CORE.open('bag')">
+        <span class="material-symbols-rounded" style="margin-right:8px">shopping_bag</span> Bag • <span id="f-t">R0</span>
     </button>
 
     <div id="bag-sheet" class="sheet">
         <div style="width:32px; height:4px; background:var(--out); border-radius:10px; margin:0 auto 20px;"></div>
-        <h2 style="margin:0 0 16px;">Your Bag</h2>
+        <h2 style="margin:0 0 16px;">Checkout</h2>
         <div id="bag-list" style="flex-grow:1; overflow-y:auto;"></div>
+        
         <div id="summary" style="background:var(--sec-cont); border-radius:24px; padding:20px; margin-top:16px;">
-            <div id="breakdown" style="font-size:12px; opacity:0.7; margin-bottom:8px;"></div>
+            <div id="breakdown" style="font-size:12px; opacity:0.7; margin-bottom:8px;">0 items</div>
             <div style="display:flex; justify-content:space-between; font-weight:700; font-size:18px;"><span>Total</span><span id="s-total">R0</span></div>
         </div>
-        <button class="btn-m3" style="background:var(--prim); color:var(--on-prim); margin-top:20px;" onclick="alert('Proceeding...')">Pay with PayFast</button>
+        <button class="btn-m3" style="background:var(--prim); color:var(--on-prim); margin-top:20px;" onclick="alert('Connecting to PayFast...')">Pay with PayFast</button>
+    </div>
+
+    <div id="auth-sheet" class="sheet">
+        <div style="width:32px; height:4px; background:var(--out); border-radius:10px; margin:0 auto 24px;"></div>
+        <div id="g_btn_container" style="display:flex; justify-content:center; margin-bottom:20px;"><div id="g_btn"></div></div>
+        <div id="u-logged" style="display:none; text-align:center;">
+            <img id="u-p-large" style="width:80px; height:80px; border-radius:50%; border:2px solid var(--prim);" src="">
+            <h2 id="u-email" style="font-size:16px; margin:12px 0;"></h2>
+            <button class="btn-m3" style="background:#442B2B; color:#F2B8B5;" onclick="CORE.out()">Sign Out</button>
+        </div>
+        <button class="btn-m3" style="background:var(--out); color:white; margin-top:auto;" onclick="CORE.close()">Back</button>
     </div>
 
     <script>
@@ -72,10 +86,14 @@
             async init() {
                 try {
                     const res = await fetch('names.json');
+                    if(!res.ok) throw new Error();
                     this.items = await res.json();
-                    this.renderCat();
-                    this.updateTotal();
-                } catch(e) { console.error(e); }
+                } catch(e) { 
+                    this.items = Array.from({length: 28}, (_, i) => `${i+1}`); // Fallback
+                }
+                this.renderCat();
+                this.updateTotal();
+                this.initGSI();
             },
             setFilter(f, el) {
                 this.filter = f;
@@ -86,22 +104,24 @@
             renderCat() {
                 const q = document.getElementById('q').value.toLowerCase();
                 const container = document.getElementById('cat');
-                container.innerHTML = this.items.filter(name => {
+                const filtered = this.items.filter(name => {
                     const matchF = this.filter === 'all' || name.toLowerCase().includes(this.filter);
                     const matchQ = name.toLowerCase().includes(q);
                     return matchF && matchQ;
-                }).map(name => {
-                    const type = name.toLowerCase().includes('keychain') ? 'Keychain' : 'Bracelet';
+                });
+                container.innerHTML = filtered.map(name => {
+                    const type = name.toLowerCase().includes('keychain') ? 'Keychain' : 
+                                 name.toLowerCase().includes('bracelet') ? 'Bracelet' : 'Otaku Bead';
                     return `
                     <div style="background:var(--card); border-radius:28px; padding:10px; border:1px solid var(--out);">
                         <img src="${name}.jpg" style="width:100%; aspect-ratio:1; border-radius:22px; object-fit:cover;" onerror="this.src='logo.jpg'">
                         <div style="padding:8px 4px 0;">
                             <span class="badge">${type}</span>
-                            <div style="font-weight:700; font-size:13px; text-transform:capitalize; margin-bottom:8px;">${name.replace(/_/g, ' ')}</div>
+                            <div style="font-weight:700; font-size:13px; text-transform:capitalize; margin-bottom:8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${name.replace(/_/g, ' ')}</div>
                             <button class="btn-m3" style="height:36px; font-size:12px; background:var(--prim); color:var(--on-prim);" onclick="CORE.add('${name}')">Add</button>
                         </div>
                     </div>`;
-                }).join('');
+                }).join('') || '<p style="grid-column: 1/3; text-align:center; opacity:0.5;">No designs found</p>';
             },
             add(name) {
                 this.bag[name] = (this.bag[name] || 0) + 1;
@@ -117,18 +137,49 @@
             renderBag() {
                 const list = document.getElementById('bag-list');
                 let k=0, b=0;
-                list.innerHTML = Object.entries(this.bag).map(([name, q]) => {
+                const entries = Object.entries(this.bag);
+                list.innerHTML = entries.map(([name, q]) => {
                     if(name.toLowerCase().includes('keychain')) k += q; else b += q;
                     return `
-                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-                        <img src="${name}.jpg" style="width:40px; height:40px; border-radius:8px;" onerror="this.src='logo.jpg'">
-                        <div style="flex-grow:1;">${name.replace(/_/g, ' ')}</div>
-                        <b>x${q}</b>
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; background:rgba(255,255,255,0.03); padding:10px; border-radius:16px;">
+                        <img src="${name}.jpg" style="width:40px; height:40px; border-radius:8px; object-fit:cover;" onerror="this.src='logo.jpg'">
+                        <div style="flex-grow:1; font-size:14px;">${name.replace(/_/g, ' ')}</div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <button onclick="CORE.mod('${name}',-1)" style="background:var(--out); border:none; color:white; border-radius:4px; width:24px; height:24px;">-</button>
+                            <b>${q}</b>
+                            <button onclick="CORE.mod('${name}',1)" style="background:var(--out); border:none; color:white; border-radius:4px; width:24px; height:24px;">+</button>
+                        </div>
                     </div>`;
-                }).join('') || 'Bag is empty';
+                }).join('') || '<p style="text-align:center; opacity:0.5;">Bag is empty</p>';
                 document.getElementById('breakdown').innerText = `${k} Keychains, ${b} Bracelets`;
                 document.getElementById('s-total').innerText = `R${this.updateTotal().total}`;
             },
+            mod(name, delta) {
+                this.bag[name] += delta;
+                if(this.bag[name] <= 0) delete this.bag[name];
+                localStorage.setItem('ob_bag', JSON.stringify(this.bag));
+                this.renderBag();
+            },
+            initGSI() {
+                const u = JSON.parse(localStorage.getItem('ob_user'));
+                if(u) {
+                    document.getElementById('u-logged').style.display = 'block';
+                    document.getElementById('g_btn_container').style.display = 'none';
+                    document.getElementById('u-p-large').src = u.picture;
+                    document.getElementById('u-p-nav').src = u.picture;
+                    document.getElementById('u-email').innerText = u.email;
+                } else {
+                    google.accounts.id.initialize({
+                        client_id: "919544111369-2hhnhfnsc0hvrgnq1dn8fjc8ca3im7jv.apps.googleusercontent.com",
+                        callback: (r) => {
+                            localStorage.setItem('ob_user', JSON.stringify(JSON.parse(atob(r.credential.split('.')[1]))));
+                            location.reload();
+                        }
+                    });
+                    google.accounts.id.renderButton(document.getElementById("g_btn"), { theme: "filled_black", shape: "pill" });
+                }
+            },
+            out() { localStorage.removeItem('ob_user'); location.reload(); },
             open(id) { document.getElementById(id+'-sheet').classList.add('full'); document.getElementById('scrim').style.display='block'; if(id==='bag') this.renderBag(); },
             close() { document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('full')); document.getElementById('scrim').style.display='none'; }
         };
