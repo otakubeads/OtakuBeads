@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>Otaku Beads | Auth V113</title>
+    <title>Otaku Beads</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0" rel="stylesheet">
@@ -69,6 +69,7 @@
         <div class="handle"></div>
         <h2>Checkout</h2>
         <div id="bag-list" style="flex-grow:1; overflow-y:auto; margin-top:16px;"></div>
+        
         <div class="paxi-section">
             <div class="paxi-card active" id="px-s" onclick="CORE.setPaxi(60, 'Standard', 'px-s')">
                 <div><b>Standard</b><br><small>7-9 Days</small></div><b>R60</b>
@@ -77,6 +78,7 @@
                 <div><b>Express</b><br><small>3-5 Days</small></div><b>R100</b>
             </div>
         </div>
+
         <div style="margin:20px 0; text-align:center;"><span id="total" style="font-size:32px; font-weight:700; color:var(--primary);">R0</span></div>
         <button class="pill-btn primary-btn" onclick="CORE.wa()">Order via WhatsApp</button>
         <button class="pill-btn" onclick="CORE.close()">Close</button>
@@ -118,14 +120,15 @@
             },
             initGSI() {
                 google.accounts.id.initialize({
-                    client_id: "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
-                    callback: onSignIn,
-                    auto_select: false,
-                    itp_support: true
+                    client_id: "788019685659-lvst1g9q2p24f0iv4f9u3k6p5ndd5c4u.apps.googleusercontent.com",
+                    callback: onSignIn
                 });
                 google.accounts.id.renderButton(document.getElementById("g_btn"), { theme: "filled_black", size: "large", shape: "pill" });
             },
-            wa() { window.open(`https://wa.me/27000000000?text=Order`); }
+            wa() {
+                const items = Object.entries(this.bag).map(([id,q])=>`#${id}(x${q})`).join(', ');
+                window.open(`https://wa.me/27000000000?text=New Order: ${items} | Method: ${this.type}`);
+            }
         };
 
         function onSignIn(resp) {
